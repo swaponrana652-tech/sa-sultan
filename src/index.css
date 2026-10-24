@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: #005b34;
+    --color-primary-container: #137547;
+    --color-surface-tint: #006d40;
+    --color-primary-fixed: #9cf6bc;
+    --color-primary-fixed-dim: #80d9a1;
+    --color-secondary-container: #fea619;
+    --color-on-secondary-container: #684000;
+    --color-secondary: #855300;
+    --color-secondary-fixed: #ffddb8;
+    --color-tertiary: #1a5939;
+    --color-tertiary-container: #357250;
+    --color-surface: #faf8ff;
+    --color-surface-container-lowest: #ffffff;
+    --color-surface-container-low: #f2f3ff;
+    --color-surface-container: #eaedff;
+    --color-surface-container-high: #e2e7ff;
+    --color-surface-container-highest: #dae2fd;
+    --color-on-surface: #131b2e;
+    --color-on-surface-variant: #3f4941;
+    --color-outline: #6f7a70;
+    --color-outline-variant: #bec9bf;
+    --color-error: #ba1a1a;
+    --color-error-container: #ffdad6;
+  }
+
+  body {
+    font-family: 'Hind Siliguri', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overscroll-behavior-y: none;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+.font-chivo {
+  font-family: 'Chivo', 'Hind Siliguri', sans-serif;
+}
+
+.font-score {
+  font-family: 'Chivo', sans-serif;
+  font-feature-settings: 'tnum' on, 'lnum' on;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+}
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top, 0px), 0px);
+}

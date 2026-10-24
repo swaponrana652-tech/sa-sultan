@@ -1,0 +1,6 @@
+{
+  "name": "শিয়ালকোল ক্রীড়া সংঘ (Shialkol Sports Club)",
+  "description": "সিরাজগঞ্জ জেলা ক্রীড়া সংস্থা অধিভুক্ত শিয়ালকোল ক্রীড়া সংঘের ডিজিটাল প্ল্যাটফর্ম - লাইভ স্কোর, টুর্নামেন্ট সূচি, স্কোয়াড তালিকা, নোটিশবোর্ড ও সদস্যপদ রেজিস্ট্রেশন।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+<html lang="bn"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Chivo:wght@700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Hind+Siliguri:wght@500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "background": "#faf8ff", "secondary-container": "#fea619", "primary-fixed": "#9cf6bc", "inverse-on-surface": "#eef0ff", "primary": "#005b34", "surface-tint": "#006d40", "tertiary-container": "#357250", "on-primary-fixed": "#002110", "surface": "#faf8ff", "outline-variant": "#bec9bf", "surface-bright": "#faf8ff", "surface-dim": "#d2d9f4", "surface-container-low": "#f2f3ff", "inverse-primary": "#80d9a1", "primary-fixed-dim": "#80d9a1", "inverse-surface": "#283044", "on-secondary-container": "#684000", "tertiary": "#1a5939", "on-tertiary-fixed": "#002111", "on-primary-fixed-variant": "#00522f", "on-secondary": "#ffffff", "secondary": "#855300", "surface-variant": "#dae2fd", "on-error-container": "#93000a", "on-primary-container": "#9ef8be", "tertiary-fixed-dim": "#95d4ac", "on-surface-variant": "#3f4941", "on-secondary-fixed": "#2a1700", "surface-container-high": "#e2e7ff", "on-tertiary-container": "#b3f4c9", "outline": "#6f7a70", "primary-container": "#137547", "on-background": "#131b2e", "on-error": "#ffffff", "on-tertiary": "#ffffff", "error": "#ba1a1a", "on-secondary-fixed-variant": "#653e00", "secondary-fixed-dim": "#ffb95f", "secondary-fixed": "#ffddb8", "on-surface": "#131b2e", "on-tertiary-fixed-variant": "#0f5132", "tertiary-fixed": "#b0f1c7", "surface-container-lowest": "#ffffff", "on-primary": "#ffffff", "surface-container": "#eaedff", "surface-container-highest": "#dae2fd", "error-container": "#ffdad6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-sm": "0.5rem", "margin-desktop": "2rem", "space-xl": "1.75rem", "space-md": "0.75rem", "margin": "1rem", "space-2xl": "2.5rem", "gutter-sm": "0.75rem", "space-lg": "1.25rem", "gutter": "1rem", "space-xs": "0.25rem" }, "fontFamily": { "display-mobile": ["Chivo", "Hind Siliguri", "sans-serif"], "headline-lg": ["Chivo", "Hind Siliguri", "sans-serif"], "score-display": ["Chivo", "sans-serif"], "headline-lg-mobile": ["Chivo", "Hind Siliguri", "sans-serif"], "headline-md": ["Chivo", "Hind Siliguri", "sans-serif"], "body-sm": ["Plus Jakarta Sans", "Hind Siliguri", "sans-serif"], "label-md": ["Chivo", "Hind Siliguri", "sans-serif"], "label-lg": ["Chivo", "Hind Siliguri", "sans-serif"], "headline-sm": ["Chivo", "Hind Siliguri", "sans-serif"], "label-sm": ["Plus Jakarta Sans", "Hind Siliguri", "sans-serif"], "body-md": ["Plus Jakarta Sans", "Hind Siliguri", "sans-serif"], "display": ["Chivo", "Hind Siliguri", "sans-serif"], "body-lg": ["Plus Jakarta Sans", "Hind Siliguri", "sans-serif"] }, "fontSize": { "display-mobile": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "900" }], "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "800" }], "score-display": ["36px", { "lineHeight": "38px", "letterSpacing": "-0.03em", "fontWeight": "900" }], "headline-lg-mobile": ["24px", { "lineHeight": "30px", "letterSpacing": "0", "fontWeight": "800" }], "headline-md": ["20px", { "lineHeight": "26px", "fontWeight": "700" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }], "label-lg": ["13px", { "lineHeight": "16px", "letterSpacing": "0.06em", "fontWeight": "700" }], "headline-sm": ["16px", { "lineHeight": "22px", "fontWeight": "700" }], "label-sm": ["10px", { "lineHeight": "12px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "display": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "900" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-1"><img alt="Shialkol Sports Club Logo" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkUV95M88FF7v59mXeL2c04Jl-8QVijN7egWXJPlOtMt0i23qBTW-z70el7VmnjZLOvTxJ9AF5naS0rnOfi24NFTLdH6MJr0mF9NmHfiODCEfD4UuJ6bwDGNuE7yaKqL_m-ftEsjqXX0kV3ek6WsSw5viCruaiK1yzL6O5hl_U5MOTQeC4AjgauXKbUTyaTqhzFNmh2VziW38SwWtel8RWCkc48Uzv8jYYdkKtCtBh-roeH7fqcNeo_A"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight truncate">শিয়ালকোল ক্রীড়া সংঘ</span><span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase flex-shrink-0">ক্লাব</span></div><span class="font-label-sm text-label-sm text-on-surface-variant truncate uppercase">Tournaments</span></div></div><div class="flex items-center gap-space-xs flex-shrink-0"><button aria-label="বিজ্ঞপ্তি" class="relative w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container active:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-secondary-container ring-2 ring-surface"></span></button><div class="w-11 h-11 flex items-center justify-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAW5HdlSQqtmq8Sqq8K80V6s3-nEl7Xr_ckrtIHnwjPS38dkk1-OUQ8lr0g61Cz4CvhC8JM6_zMIeGTx6mTZwhBDFFU6QYVUMDhN8pccvITDdGGCyquRbjCF_Xfq7yRRUQ8eaXVG4PVxxHwGg08eqPM6i3hESGrc9ZD90EPyGM0L-Wljbo4Chjd70qTemjj5r6abx5AVd_RljQSd710oER-tR_OlyxoWqAPZT_zrce4_Q31bTqrJVck4w"/></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full pb-10">
+<!-- Sports Filter Navigation Ribbon -->
+<section class="sticky top-16 z-40 bg-surface/95 backdrop-blur-md px-margin py-space-sm flex items-center justify-between gap-space-sm shadow-sm">
+<div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar py-0.5 w-full">
+<button class="filter-tab flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-primary text-on-primary font-headline-sm text-headline-sm transition-all shadow-sm" id="tab-live" onclick="switchTab('live')">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-ping"></span>
+<span>চলমান ও লাইভ</span>
+<span class="px-1.5 py-0.2 rounded-full bg-on-primary/20 text-on-primary font-label-sm text-label-sm">১</span>
+</button>
+<button class="filter-tab flex-shrink-0 flex items-center gap-1 px-3.5 py-2 rounded-full bg-surface-container text-on-surface font-headline-sm text-headline-sm transition-all hover:bg-surface-container-high" id="tab-upcoming" onclick="switchTab('upcoming')">
+<span>আসন্ন টুর্নামেন্ট</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-dim text-on-surface-variant font-label-sm text-label-sm">২</span>
+</button>
+<button class="filter-tab flex-shrink-0 flex items-center gap-1 px-3.5 py-2 rounded-full bg-surface-container text-on-surface font-headline-sm text-headline-sm transition-all hover:bg-surface-container-high" id="tab-history" onclick="switchTab('history')">
+<span>পয়েন্ট ও ইতিহাস</span>
+</button>
+</div>
+</section>
+<!-- Content Container -->
+<div class="px-margin flex flex-col gap-space-xl mt-space-md">
+<!-- Live Match Block (Hero Card) -->
+<div class="flex flex-col gap-space-lg" id="view-live">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">sports_soccer</span>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">চলমান ফিচার্ড ম্যাচ</h2>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+          লাইভ • ৬৭ মি:
+        </span>
+</div>
+<!-- Athletic Stadium Match Card -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest shadow-md flex flex-col">
+<!-- Tournament Meta Bar -->
+<div class="bg-primary text-on-primary px-space-md py-space-sm flex items-center justify-between">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-secondary-container">emoji_events</span>
+<span class="font-headline-sm text-headline-sm truncate">শিয়ালকোল গোল্ডকাপ ফুটবল ২০২৫</span>
+</div>
+<span class="font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full flex-shrink-0">
+            সেমিফাইনাল ২
+          </span>
+</div>
+<!-- Stadium Grass Ambient Visual Banner -->
+<div class="relative w-full h-28 overflow-hidden bg-primary-container">
+<img class="w-full h-full object-cover opacity-35" data-alt="Dynamic dramatic wide shot of a floodlit village football tournament match in Bangladesh at dusk with packed crowd cheering along lush green grass pitch under stadium floodlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDmXeC_nL8JShWMOyiJHYtrqH6g8MBoMpEy5D_J2V2MhF-gTj-TnwXXad8baz1xNzzvrk2GBn_NqPwUpbjRWz0fjD3eC7oQAIQD4QDMTt24AM4_J2A3ryQzvMgSTPgdICnG72PYEyhjFCiDX8I8T0t-a4JisOVdBORlXcOJ9N5g47cwBpAXD8t0YMqspFHRD0iP8k2d0i_zCThr4fx8doBzGRTA6nfUI0mj6cP17_y_pmNYR7SAnpz4w"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/30 to-transparent"></div>
+<div class="absolute inset-x-0 bottom-2 px-space-md flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 bg-surface-container-lowest/80 backdrop-blur-sm px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px] text-primary">location_on</span>
+              শিয়ালকোল সেন্ট্রাল হাই স্কুল মাঠ
+            </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-lowest/80 backdrop-blur-sm px-2 py-0.5 rounded">
+              দর্শক: ৪,৫০০+
+            </span>
+</div>
+</div>
+<!-- Versus Scoreboard Grid -->
+<div class="px-space-md pt-space-xs pb-space-md flex flex-col gap-space-md">
+<div class="grid grid-cols-7 items-center">
+<!-- Home Team -->
+<div class="col-span-3 flex flex-col items-center text-center gap-1">
+<div class="w-14 h-14 rounded-full bg-surface-container-low flex items-center justify-center shadow-sm relative">
+<span class="material-symbols-outlined text-primary text-[32px]">shield</span>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center font-bold">শ</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1 leading-snug">শিয়ালকোল ইয়ুথ</h3>
+<span class="font-label-sm text-label-sm text-primary font-semibold">স্বাগতিক দল</span>
+</div>
+<!-- Score Hub -->
+<div class="col-span-1 flex flex-col items-center justify-center">
+<div class="flex items-center gap-1 font-score-display text-score-display text-on-surface font-extrabold tracking-tight">
+<span class="text-primary font-display" id="score-home">১</span>
+<span class="text-on-surface-variant/40">-</span>
+<span class="text-on-surface font-display" id="score-away">০</span>
+</div>
+<span class="font-label-sm text-label-sm text-error bg-error-container/40 px-2 py-0.5 rounded-full mt-0.5">২য় অর্ধার্ধ</span>
+</div>
+<!-- Away Team -->
+<div class="col-span-3 flex flex-col items-center text-center gap-1">
+<div class="w-14 h-14 rounded-full bg-surface-container-low flex items-center justify-center shadow-sm relative">
+<span class="material-symbols-outlined text-secondary text-[32px]">sports_kabaddi</span>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-secondary text-on-secondary font-label-sm text-label-sm flex items-center justify-center font-bold">স</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1 leading-snug">সলঙ্গা রাইডার্স</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">আমন্ত্রিত একাদশ</span>
+</div>
+</div>
+<!-- Goal Event Notification Tag -->
+<div class="bg-surface-container-low rounded-lg p-2.5 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-container text-[20px]">sports</span>
+<div class="flex-1 min-w-0">
+<p class="font-body-sm text-body-sm text-on-surface truncate">
+<span class="font-bold text-primary">গোল!</span> রাকিবুল হাসান (৩৪' মিনিট - হেডার)
+              </p>
+</div>
+<button class="font-label-sm text-label-sm text-primary bg-primary-fixed/50 px-2 py-1 rounded hover:bg-primary-fixed transition-colors">
+              রিপ্লে
+            </button>
+</div>
+<!-- Mini Match Metric Tracker Strip -->
+<div class="bg-surface-container rounded-lg p-space-sm flex flex-col gap-2">
+<div class="flex items-center justify-between font-label-md text-label-md text-on-surface-variant px-1">
+<span>ম্যাচ স্ট্যাটাস ও ট্র্যাকার</span>
+<span class="text-primary font-bold">৬৭:১২"</span>
+</div>
+<!-- Stat Counters (Yellow cards, Corners, Shots) -->
+<div class="grid grid-cols-3 gap-2 text-center pt-1">
+<div class="bg-surface-container-lowest rounded py-1.5 px-1 shadow-sm flex flex-col items-center">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="w-2.5 h-3.5 rounded-[1px] bg-secondary-container inline-block"></span>
+<span class="font-label-sm text-label-sm">হলুদ কার্ড</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">১ - ২</span>
+</div>
+<div class="bg-surface-container-lowest rounded py-1.5 px-1 shadow-sm flex flex-col items-center">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">flag</span>
+<span class="font-label-sm text-label-sm">কর্নার</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">৫ - ৩</span>
+</div>
+<div class="bg-surface-container-lowest rounded py-1.5 px-1 shadow-sm flex flex-col items-center">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-tertiary">target</span>
+<span class="font-label-sm text-label-sm">অন-টার্গেট</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">৪ - ২</span>
+</div>
+</div>
+<!-- Momentum / Possession Flow Indicator -->
+<div class="flex flex-col gap-1 mt-1">
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>বল দখল (Ball Possession)</span>
+<span class="font-bold text-on-surface">৫৬% : ৪৪%</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-variant overflow-hidden flex">
+<div class="h-full bg-primary" style="width: 56%"></div>
+<div class="h-full bg-secondary-container" style="width: 44%"></div>
+</div>
+</div>
+</div>
+<!-- Commentary Micro-feed (Moment of delight interactivity) -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate max-w-[220px]">
+                সলঙ্গার কর্নার শট সেভ করলেন গোলরক্ষক সজীব...
+              </p>
+</div>
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm active:scale-95 transition-transform shadow-sm" onclick="cheerHomeTeam()">
+<span class="material-symbols-outlined text-[16px]">celebration</span>
+<span id="cheer-count">চিয়ার (১৪২)</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Upcoming Tournaments Section -->
+<div class="flex flex-col gap-space-md" id="view-upcoming">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[22px]">event_upcoming</span>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">আসন্ন ক্রীড়া সূচি</h2>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold">সকল সূচি</span>
+</div>
+<!-- Fixture 1: Cricket Super League -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1 text-primary bg-surface-container-low px-2 py-0.5 rounded font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-[15px]">sports_cricket</span>
+            শিয়ালকোল ক্রিকেট সুপার লিগ ২০২৫
+          </span>
+<span class="bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm px-2 py-0.5 rounded-full font-bold">
+            ম্যাচ #০৪
+          </span>
+</div>
+<div class="flex items-center justify-between py-1">
+<div class="flex items-center gap-2.5 flex-1 min-w-0">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center font-headline-sm text-headline-sm text-on-primary-fixed flex-shrink-0">
+              টা
+            </div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">শিয়ালকোল টাইটানস</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">অধিনায়ক: আরিফ</span>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant px-2">বনাম</span>
+<div class="flex items-center gap-2.5 flex-1 min-w-0 justify-end text-right">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">রতনকান্দি কিংস</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">অধিনায়ক: তানভীর</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center font-headline-sm text-headline-sm text-on-surface flex-shrink-0">
+              কি
+            </div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2.5 flex items-center justify-between mt-1">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-[18px]">calendar_month</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">২০ নভেম্বর ২০২৫ • দুপুর ২:০০</span>
+</div>
+<button class="inline-flex items-center gap-1 text-primary font-label-md text-label-md bg-surface-container-lowest px-2.5 py-1 rounded shadow-sm hover:bg-surface-tint hover:text-on-primary transition-colors" onclick="setReminder(this)">
+<span class="material-symbols-outlined text-[16px]">notifications_active</span>
+            স্মারক রাখুন
+          </button>
+</div>
+</div>
+<!-- Fixture 2: Badminton Tournament Open Registration -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm relative overflow-hidden">
+<div class="absolute -right-8 -top-8 w-24 h-24 bg-secondary-container/20 rounded-full pointer-events-none"></div>
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1 text-tertiary bg-tertiary-fixed/30 px-2 py-0.5 rounded font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-[15px]">sports_tennis</span>
+            বিজয় দিবস ব্যাডমিন্টন টুর্নামেন্ট
+          </span>
+<span class="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-2.5 py-0.5 rounded-full font-bold animate-pulse">
+            রেজিস্ট্রেশন চলছে
+          </span>
+</div>
+<div class="flex gap-space-sm mt-1">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="High intensity indoor amateur badminton doubles tournament match at night under warm gymnasium stadium lights with shuttlecock in mid-air" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_W_JRbA8BT53NXn3gDnDfRCYhPJ81Tim71RkoGLBbgr2kFDhl11ONftlbFuPQ9u1xNsg0kooE85BuHBMuNn_3HaQeBiZg0Ohlgx5h5883QwIeVpnk68wgbCZPmRA67uAi92rSrbSFP1y1X2ckzfNIHPzOtbEtYirkkItYk1J5JZkplgRWWf0Wkpqbksnfj4rN7-5873Lmx6sILncvlkvg2GkR5CNYsHWq4rjJ-YEERnTT8DYK9tzWyg"/>
+</div>
+<div class="flex flex-col justify-between flex-1 min-w-0">
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface leading-tight">উন্মুক্ত দ্বৈত ব্যাডমিন্টন ২০২৫</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">স্থান: ক্লাব ইনডোর কোর্ট, শিয়ালকোল বাজার</p>
+</div>
+<div class="flex items-center gap-space-sm text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px] text-primary">groups</span>৩২ টিম</span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px] text-secondary">military_tech</span>প্রাইজমানি: ১৫,০০০৳</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-error font-medium">শেষ তারিখ: ১৫ ডিসেম্বর ২০২৫</span>
+<a class="px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md inline-flex items-center gap-1 shadow-sm active:scale-95 transition-transform" href="#register-banner">
+<span>দল নিবন্ধন</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Points Table Snapshot Component -->
+<div class="flex flex-col gap-space-sm" id="view-history">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">format_list_numbered</span>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">পয়েন্ট টেবিল (গ্রুপ এ)</h2>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">গোল্ডকাপ ২০২৫</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<!-- Table Header -->
+<div class="grid grid-cols-12 bg-surface-container-low px-3 py-2 font-label-md text-label-md text-on-surface-variant">
+<span class="col-span-6">দল (Club)</span>
+<span class="col-span-2 text-center">ম্যাচ</span>
+<span class="col-span-2 text-center">জয়-ড্র</span>
+<span class="col-span-2 text-right">পয়েন্ট</span>
+</div>
+<!-- Row 1: Shialkol Youth (Leader) -->
+<div class="grid grid-cols-12 px-3 py-2.5 items-center bg-primary-fixed/20">
+<div class="col-span-6 flex items-center gap-1.5 min-w-0">
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center font-bold flex-shrink-0">১</span>
+<span class="font-headline-sm text-headline-sm text-primary truncate">শিয়ালকোল স্পোর্টস</span>
+</div>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-on-surface">৩</span>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-on-surface-variant">৩-০</span>
+<span class="col-span-2 text-right font-headline-sm text-headline-sm text-primary font-bold">৯</span>
+</div>
+<!-- Row 2: Solonga Riders -->
+<div class="grid grid-cols-12 px-3 py-2.5 items-center">
+<div class="col-span-6 flex items-center gap-1.5 min-w-0">
+<span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center justify-center font-bold flex-shrink-0">২</span>
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">সলঙ্গা রাইডার্স</span>
+</div>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-on-surface">৩</span>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-on-surface-variant">২-০</span>
+<span class="col-span-2 text-right font-headline-sm text-headline-sm text-on-surface font-bold">৬</span>
+</div>
+<!-- Row 3: Ratankandi Kings -->
+<div class="grid grid-cols-12 px-3 py-2.5 items-center bg-surface-container-low/50">
+<div class="col-span-6 flex items-center gap-1.5 min-w-0">
+<span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center justify-center font-bold flex-shrink-0">৩</span>
+<span class="font-body-md text-body-md text-on-surface truncate font-semibold">রতনকান্দি একাদশ</span>
+</div>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-on-surface">৩</span>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-on-surface-variant">১-১</span>
+<span class="col-span-2 text-right font-headline-sm text-headline-sm text-on-surface font-bold">৪</span>
+</div>
+<!-- Row 4: Bagbati Warriors -->
+<div class="grid grid-cols-12 px-3 py-2.5 items-center">
+<div class="col-span-6 flex items-center gap-1.5 min-w-0">
+<span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm flex items-center justify-center font-bold flex-shrink-0">৪</span>
+<span class="font-body-md text-body-md text-on-surface-variant truncate">বাগবাটি ওয়ারিয়র্স</span>
+</div>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-on-surface">৩</span>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-on-surface-variant">০-১</span>
+<span class="col-span-2 text-right font-headline-sm text-headline-sm text-on-surface-variant font-bold">১</span>
+</div>
+<div class="p-2 bg-surface-container-low text-center">
+<button class="font-label-sm text-label-sm text-primary font-bold hover:underline inline-flex items-center gap-1">
+            সম্পূর্ণ গ্রুপ তালিকা ও গোল ব্যবধান দেখুন
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Registration Call To Action Banner -->
+<div class="relative rounded-2xl bg-gradient-to-br from-primary to-primary-container text-on-primary p-space-lg shadow-lg overflow-hidden flex flex-col gap-space-sm" id="register-banner">
+<div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-secondary-container/20 pointer-events-none blur-xl"></div>
+<div class="absolute right-3 top-3 opacity-15 pointer-events-none">
+<span class="material-symbols-outlined text-[80px]">sports_volleyball</span>
+</div>
+<div class="inline-flex items-center gap-1 bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full font-label-sm text-label-sm self-start font-bold">
+<span class="material-symbols-outlined text-[14px]">how_to_reg</span>
+        নতুন সিজন রেজিস্ট্রেশন
+      </div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile tracking-tight max-w-[85%]">
+        আপনার টিম কি চ্যাম্পিয়ন হতে প্রস্তুত?
+      </h3>
+<p class="font-body-sm text-body-sm text-on-primary/90 max-w-[90%] leading-relaxed">
+        শিয়ালকোল প্রিমিয়ার শীতকালীন ব্যাডমিন্টন ও ভলিবল ২০২৫-এর জন্য ক্লাব বা পাড়া ভিত্তিক দল নিবন্ধন চলছে। সীমিত আসন!
+      </p>
+<div class="flex items-center gap-space-sm pt-2">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-primary/70 uppercase">নিবন্ধনের শেষ সময়</span>
+<span class="font-headline-sm text-headline-sm text-secondary-container">১০ ডিসেম্বর ২০২৫</span>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-2">
+<button class="flex-1 min-h-[44px] bg-secondary-container text-on-secondary-container font-headline-sm text-headline-sm rounded-lg py-2.5 px-4 text-center font-bold shadow-md active:scale-98 transition-all flex items-center justify-center gap-1.5" onclick="openRegistrationModal()">
+<span class="material-symbols-outlined text-[18px]">app_registration</span>
+          টিম নিবন্ধন করুন
+        </button>
+<button aria-label="শেয়ার করুন" class="w-11 h-11 bg-on-primary/10 text-on-primary rounded-lg flex items-center justify-center active:bg-on-primary/20 transition-colors" onclick="shareTournament()">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+</div>
+<!-- Quick Sport Rule / FAQ Accordion Micro-Delight -->
+<div class="bg-surface-container rounded-xl p-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[22px]">policy</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">টুর্নামেন্টের নিয়মাবলী ও হ্যান্ডবুক</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">প্লেয়ার ড্রাফট ও আচরণবিধি ২০২৫</span>
+</div>
+</div>
+<button class="w-9 h-9 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+<!-- Interactive Registration Sheet / Modal (Hidden by default) -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/60 backdrop-blur-sm hidden items-end justify-center p-0" id="reg-modal">
+<div class="bg-surface-container-lowest w-full max-w-lg rounded-t-2xl p-space-lg flex flex-col gap-space-md shadow-2xl max-h-[795px] overflow-y-auto">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]">assignment_turned_in</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">দল রেজিস্ট্রেশন ফরম</h3>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant" onclick="closeRegistrationModal()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+        দয়া করে দলের নাম ও ম্যানেজারের যোগাযোগ নম্বর প্রদান করুন। আমাদের টুর্নামেন্ট কমিটি ২৪ ঘণ্টার মধ্যে যোগাযোগ করবে।
+      </p>
+<form class="flex flex-col gap-3" onsubmit="handleRegistrationSubmit(event)">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1">দলের নাম (Team Name)</label>
+<input class="w-full px-3 py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md outline-none focus:bg-surface-container-lowest transition-colors" placeholder="উদা: শিয়ালকোল টাইগার্স" required="" type="text"/>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1">টুর্নামেন্ট নির্বাচন করুন</label>
+<select class="w-full px-3 py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md outline-none focus:bg-surface-container-lowest transition-colors">
+<option>বিজয় দিবস ব্যাডমিন্টন ২০২৫</option>
+<option>শিয়ালকোল ভলিবল চ্যালেঞ্জ কাপ</option>
+<option>শীতকালীন ক্রিকেট লিগ ২০২৬</option>
+</select>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1">অধিনায়ক / প্রতিনিধির মোবাইল নম্বর</label>
+<input class="w-full px-3 py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md outline-none focus:bg-surface-container-lowest transition-colors" placeholder="০১৭১XXXXXXX" required="" type="tel"/>
+</div>
+<button class="w-full mt-2 py-3 bg-primary text-on-primary font-headline-sm text-headline-sm rounded-lg font-bold shadow-md active:bg-primary-container transition-colors" type="submit">
+          রেজিস্ট্রেশন জমা দিন
+        </button>
+</form>
+</div>
+</div>
+<!-- Toast Notification Message -->
+<div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-inverse-surface text-inverse-on-surface px-4 py-2 rounded-full font-body-sm text-body-sm shadow-lg opacity-0 transition-opacity pointer-events-none flex items-center gap-1.5" id="toast-msg">
+<span class="material-symbols-outlined text-secondary-container text-[18px]">check_circle</span>
+<span id="toast-text">নোটিফিকেশন সেভ হয়েছে!</span>
+</div>
+</div>
+<script>
+  let cheers = 142;
+  function cheerHomeTeam() {
+    cheers++;
+    const cheerElem = document.getElementById('cheer-count');
+    if (cheerElem) {
+      cheerElem.textContent = 'চিয়ার (' + cheers + ')';
+    }
+    showToast('শিয়ালকোল দলকে চিয়ার করার জন্য ধন্যবাদ! ⚽🔥');
+  }
+
+  function setReminder(btn) {
+    btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">done</span> যুক্ত হয়েছে';
+    btn.classList.add('bg-primary-fixed', 'text-on-primary-fixed');
+    showToast('ম্যাচ শুরু হওয়ার ৩০ মিনিট পূর্বে অ্যালার্ট পাবেন!');
+  }
+
+  function openRegistrationModal() {
+    const modal = document.getElementById('reg-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeRegistrationModal() {
+    const modal = document.getElementById('reg-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  function handleRegistrationSubmit(e) {
+    e.preventDefault();
+    closeRegistrationModal();
+    showToast('অভিনন্দন! রেজিস্ট্রেশন সফলভাবে জমা হয়েছে।');
+  }
+
+  function shareTournament() {
+    if (navigator.share) {
+      navigator.share({
+        title: 'শিয়ালকোল ক্রীড়া সংঘ টুর্নামেন্ট',
+        text: 'চলতি টুর্নামেন্ট ও লাইভ স্কোর দেখুন শিয়ালকোল ক্লাবে!',
+        url: window.location.href,
+      }).catch(() => {});
+    } else {
+      showToast('লিংক কপি করা হয়েছে!');
+    }
+  }
+
+  function showToast(text) {
+    const toast = document.getElementById('toast-msg');
+    const toastText = document.getElementById('toast-text');
+    if (toast && toastText) {
+      toastText.textContent = text;
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 2500);
+    }
+  }
+
+  function switchTab(type) {
+    const liveSec = document.getElementById('view-live');
+    const upcomingSec = document.getElementById('view-upcoming');
+    const historySec = document.getElementById('view-history');
+
+    const tabLive = document.getElementById('tab-live');
+    const tabUpcoming = document.getElementById('tab-upcoming');
+    const tabHistory = document.getElementById('tab-history');
+
+    const defaultClass = 'filter-tab flex-shrink-0 flex items-center gap-1 px-3.5 py-2 rounded-full bg-surface-container text-on-surface font-headline-sm text-headline-sm transition-all hover:bg-surface-container-high';
+    const activeClass = 'filter-tab flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-primary text-on-primary font-headline-sm text-headline-sm transition-all shadow-sm';
+
+    // Reset tabs
+    tabLive.className = defaultClass;
+    tabUpcoming.className = defaultClass;
+    tabHistory.className = defaultClass;
+
+    if (type === 'live') {
+      tabLive.className = activeClass;
+      liveSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else if (type === 'upcoming') {
+      tabUpcoming.className = activeClass;
+      upcomingSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else if (type === 'history') {
+      tabHistory.className = activeClass;
+      historySec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(15,81,50,0.06)]" data-active-classes="text-primary-container font-headline-sm"><div class="h-16 px-space-xs grid grid-cols-4 items-center"><a class="min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-on-surface-variant transition-colors py-1" data-path="home" href="#"><span class="material-symbols-outlined text-[24px]">sports_cricket</span><span class="font-label-md text-label-md tracking-tight leading-none text-center">হোম</span></a><a aria-current="page" class="min-h-[44px] flex flex-col items-center justify-center gap-0.5 transition-colors py-1 text-primary-container font-headline-sm" data-path="tournaments" href="#"><span class="material-symbols-outlined text-[24px]">emoji_events</span><span class="font-label-md text-label-md tracking-tight leading-none text-center">টুর্নামেন্ট</span></a><a class="min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-on-surface-variant transition-colors py-1" data-path="players" href="#"><span class="material-symbols-outlined text-[24px]">groups</span><span class="font-label-md text-label-md tracking-tight leading-none text-center">খেলোয়াড়</span></a><a class="min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-on-surface-variant transition-colors py-1" data-path="club-contact" href="#"><span class="material-symbols-outlined text-[24px]">campaign</span><span class="font-label-md text-label-md tracking-tight leading-none text-center truncate max-w-full px-0.5">ক্লাব নোটিশ</span></a></div></nav></body></html>
