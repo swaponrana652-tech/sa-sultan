@@ -165,6 +165,18 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({ player, onClose, onChe
 
           {/* Attributes List */}
           <div className="grid grid-cols-2 gap-2 text-xs">
+            {player.age && (
+              <div className="bg-[#f2f3ff] p-2.5 rounded-lg flex items-center justify-between">
+                <span className="text-[#3f4941]">বয়স</span>
+                <span className="font-bold text-[#005b34]">{player.age} বছর</span>
+              </div>
+            )}
+            {player.sl && (
+              <div className="bg-[#f2f3ff] p-2.5 rounded-lg flex items-center justify-between">
+                <span className="text-[#3f4941]">স্কোয়াড ক্রঃ</span>
+                <span className="font-bold text-[#005b34]">#{player.sl}</span>
+              </div>
+            )}
             <div className="bg-[#f2f3ff] p-2.5 rounded-lg flex items-center justify-between">
               <span className="text-[#3f4941]">জার্সি নম্বর</span>
               <span className="font-bold text-[#005b34]">#{player.jersey}</span>
@@ -174,12 +186,16 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({ player, onClose, onChe
               <span className="font-bold text-[#ba1a1a]">{player.bloodGroup || 'B (+ve)'}</span>
             </div>
             <div className="bg-[#f2f3ff] p-2.5 rounded-lg flex items-center justify-between">
+              <span className="text-[#3f4941]">গ্রাম / এলাকা</span>
+              <span className="font-bold text-[#131b2e]">{player.village || 'শিয়ালকোল'}</span>
+            </div>
+            <div className="bg-[#f2f3ff] p-2.5 rounded-lg flex items-center justify-between">
               <span className="text-[#3f4941]">ক্লাবে যোগদান</span>
               <span className="font-bold text-[#131b2e]">{player.joinedYear || '২০২০'}</span>
             </div>
-            <div className="bg-[#f2f3ff] p-2.5 rounded-lg flex items-center justify-between">
+            <div className="bg-[#f2f3ff] p-2.5 rounded-lg flex items-center justify-between col-span-2">
               <span className="text-[#3f4941]">স্ট্যাটাস</span>
-              <span className="font-bold text-[#005b34]">সক্রিয় সদস্য</span>
+              <span className="font-bold text-[#005b34]">সক্রিয় প্রথম একাদশ স্কোয়াড</span>
             </div>
           </div>
 

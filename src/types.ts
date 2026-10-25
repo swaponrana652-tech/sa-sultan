@@ -27,6 +27,9 @@ export interface Player {
   bio?: string;
   bloodGroup?: string;
   joinedYear?: string;
+  age?: number | string;
+  sl?: number;
+  village?: string;
 }
 
 export interface MatchScore {
@@ -101,6 +104,17 @@ export interface ClubNotice {
   description?: string;
   fileSize?: string;
   downloadUrl?: string;
+  image?: string;
+}
+
+export interface GalleryItem {
+  id: string;
+  tag: string;
+  title: string;
+  sub?: string;
+  image: string;
+  caption?: string;
+  category?: 'match' | 'ceremony' | 'office';
 }
 
 export interface Facility {
@@ -144,3 +158,19 @@ export interface TeamRegistration {
   date: string;
   status: 'pending' | 'approved';
 }
+
+export interface AdminProfile {
+  id: string;
+  name: string;
+  nameEn: string;
+  role: string;
+  roleTitle: string;
+  committee: string;
+  phone: string;
+  email: string;
+  image: string;
+  bio: string;
+  officeAddress?: string;
+  lastLogin?: string;
+}
+

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { CAPTAIN_PLAYER, SQUAD_PLAYERS, toBengaliDigits } from '../data/mockData';
+import { CAPTAIN_PLAYER, SQUAD_PLAYERS, PLAYER_LIST_DOCUMENT, toBengaliDigits } from '../data/mockData';
 import { Player } from '../types';
 
 interface PlayersScreenProps {
@@ -15,18 +15,20 @@ export const PlayersScreen: React.FC<PlayersScreenProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'football' | 'cricket' | 'indoor' | 'coach'>('all');
-  const [sortBy, setSortBy] = useState<'rating' | 'name' | 'jersey'>('rating');
+  const [sortBy, setSortBy] = useState<'sl' | 'name' | 'jersey' | 'age'>('sl');
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+  const [showDocModal, setShowDocModal] = useState(false);
 
   const categories = [
-    { id: 'all', label: 'সকল (All)', icon: 'verified' },
-    { id: 'football', label: 'ফুটবল একাদশ', icon: 'sports_soccer' },
+    { id: 'all', label: 'সকল (৩২+)', icon: 'verified' },
+    { id: 'football', label: 'শিয়ালকোল ফুটবল স্কোয়াড', icon: 'sports_soccer' },
     { id: 'cricket', label: 'ক্রিকেট টিম', icon: 'sports_cricket' },
-    { id: 'indoor', label: 'ব্যাডমিন্টন ও ইনডোর', icon: 'sports_tennis' },
+    { id: 'indoor', label: 'ইনডোর স্পোর্টস', icon: 'sports_tennis' },
     { id: 'coach', label: 'কোচিং স্টাফ', icon: 'sports' },
   ] as const;
 
   const filteredSquad = useMemo(() => {
-    return SQUAD_PLAYERS.filter((player) => {
+    const list = SQUAD_PLAYERS.filter((player) => {
       const matchesCategory = selectedCategory === 'all' || player.sport === selectedCategory;
       const query = searchQuery.trim().toLowerCase();
       if (!query) return matchesCategory;
@@ -34,10 +36,27 @@ export const PlayersScreen: React.FC<PlayersScreenProps> = ({
       const matchesName = player.name.toLowerCase().includes(query);
       const matchesJersey = player.jersey.toLowerCase().includes(query) || toBengaliDigits(player.jersey).includes(query);
       const matchesRole = player.role.toLowerCase().includes(query);
+      const matchesAge = player.age ? (String(player.age).includes(query) || toBengaliDigits(player.age).includes(query)) : false;
 
-      return matchesCategory && (matchesName || matchesJersey || matchesRole);
+      return matchesCategory && (matchesName || matchesJersey || matchesRole || matchesAge);
     });
-  }, [searchQuery, selectedCategory]);
+
+    return [...list].sort((a, b) => {
+      if (sortBy === 'sl') {
+        return (a.sl || 999) - (b.sl || 999);
+      }
+      if (sortBy === 'name') {
+        return a.name.localeCompare(b.name, 'bn');
+      }
+      if (sortBy === 'jersey') {
+        return (parseInt(a.jersey, 10) || 999) - (parseInt(b.jersey, 10) || 999);
+      }
+      if (sortBy === 'age') {
+        return (Number(b.age) || 0) - (Number(a.age) || 0);
+      }
+      return (a.sl || 999) - (b.sl || 999);
+    });
+  }, [searchQuery, selectedCategory, sortBy]);
 
   const showCaptain = useMemo(() => {
     if (selectedCategory !== 'all' && selectedCategory !== 'football') return false;
@@ -205,32 +224,77 @@ export const PlayersScreen: React.FC<PlayersScreenProps> = ({
           </section>
         )}
 
-        {/* 3. SQUAD ROSTER GRID HEADER */}
-        <section className="flex items-center justify-between pt-1">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-[#131b2e] tracking-tight">ক্লাব সদস্য তালিকা</h3>
-            <span className="px-2 py-0.5 rounded-full bg-[#9cf6bc] text-[#002110] text-[10px] font-bold">
-              {toBengaliDigits(totalVisibleCount)} জন
-            </span>
+        {/* 3. SQUAD ROSTER CONTROLS & HEADER */}
+        <section className="flex flex-col gap-2 pt-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-black text-[#131b2e] tracking-tight">
+                শিয়ালকোল খেলোয়াড় তালিকা
+              </h3>
+              <span className="px-2 py-0.5 rounded-full bg-[#005b34] text-white text-[10px] font-bold">
+                {toBengaliDigits(totalVisibleCount)} জন
+              </span>
+            </div>
+
+            {/* Document Viewer Button */}
+            <button
+              onClick={() => setShowDocModal(true)}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold shadow-sm active:scale-95 transition-all border border-red-300/40"
+              title="মূল তালিকা ডকুমেন্ট দেখুন"
+            >
+              <span className="material-symbols-outlined text-[14px]">description</span>
+              <span>মূল ডকুমেন্ট (৩২ জন)</span>
+            </button>
           </div>
 
-          <button
-            onClick={() => {
-              const modes = ['rating', 'name', 'jersey'] as const;
-              const nextIdx = (modes.indexOf(sortBy) + 1) % modes.length;
-              setSortBy(modes[nextIdx]);
-              onShowToast(`সর্ট পরিবর্তন করা হয়েছে: ${modes[nextIdx] === 'name' ? 'নাম অনুসারে' : modes[nextIdx] === 'jersey' ? 'জার্সি অনুসারে' : 'রেটিং অনুসারে'}`);
-            }}
-            className="flex items-center gap-1 text-[#3f4941] hover:text-[#005b34] text-xs font-bold"
-          >
-            <span className="material-symbols-outlined text-[16px]">tune</span>
-            <span>
-              সর্ট: {sortBy === 'name' ? 'নাম' : sortBy === 'jersey' ? 'জার্সি' : 'রেটিং'}
-            </span>
-          </button>
+          {/* View Mode & Sort Bar */}
+          <div className="flex items-center justify-between bg-white p-1.5 rounded-xl border border-[#bec9bf]/20 shadow-xs">
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-[#f2f3ff] p-0.5 rounded-lg">
+              <button
+                onClick={() => setViewMode('table')}
+                className={`px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1 transition-all ${
+                  viewMode === 'table'
+                    ? 'bg-[#005b34] text-white shadow-xs'
+                    : 'text-[#3f4941] hover:text-[#005b34]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[15px]">table_rows</span>
+                <span>তালিকা ভিউ</span>
+              </button>
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1 transition-all ${
+                  viewMode === 'cards'
+                    ? 'bg-[#005b34] text-white shadow-xs'
+                    : 'text-[#3f4941] hover:text-[#005b34]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[15px]">grid_view</span>
+                <span>কার্ড ভিউ</span>
+              </button>
+            </div>
+
+            {/* Sort Toggle */}
+            <button
+              onClick={() => {
+                const modes = ['sl', 'age', 'name', 'jersey'] as const;
+                const nextIdx = (modes.indexOf(sortBy) + 1) % modes.length;
+                setSortBy(modes[nextIdx]);
+                const label = modes[nextIdx] === 'sl' ? 'ক্রমিক #১-৩২' : modes[nextIdx] === 'age' ? 'বয়স' : modes[nextIdx] === 'name' ? 'নাম' : 'জার্সি';
+                onShowToast(`সর্ট করা হয়েছে: ${label}`);
+              }}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#eaedff] text-[#005b34] text-xs font-bold hover:bg-[#dae2fd] active:scale-95 transition-all"
+            >
+              <span className="material-symbols-outlined text-[15px]">tune</span>
+              <span>
+                সর্ট: {sortBy === 'sl' ? 'ক্রঃ #' : sortBy === 'age' ? 'বয়স' : sortBy === 'name' ? 'নাম' : 'জার্সি'}
+              </span>
+            </button>
+          </div>
         </section>
 
-        {/* 4. PLAYER CARDS 2-COLUMN ATHLETIC GRID */}
+        {/* 4. PLAYER LIST RENDER (TABLE OR CARDS) */}
         {filteredSquad.length === 0 && !showCaptain ? (
           <div className="flex flex-col items-center justify-center py-10 px-4 text-center rounded-xl bg-white border border-[#bec9bf]/20 mt-2">
             <div className="w-14 h-14 rounded-full bg-[#e2e7ff] flex items-center justify-center text-[#3f4941] mb-2">
@@ -250,7 +314,95 @@ export const PlayersScreen: React.FC<PlayersScreenProps> = ({
               সকল ফিল্টার মুছুন
             </button>
           </div>
+        ) : viewMode === 'table' ? (
+          /* OFFICIAL SQUAD ROSTER TABLE (NAME, AGE, JERSEY, POSITION) */
+          <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#bec9bf]/20">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[340px]">
+                <thead>
+                  <tr className="bg-gradient-to-r from-[#005b34] to-[#137547] text-white text-[11px] font-bold uppercase tracking-wider">
+                    <th className="py-2.5 px-2.5 text-center w-10">ক্রঃ</th>
+                    <th className="py-2.5 px-3">খেলোয়াড়ের নাম</th>
+                    <th className="py-2.5 px-2 text-center">বয়স</th>
+                    <th className="py-2.5 px-2 text-center">জার্সি</th>
+                    <th className="py-2.5 px-2">পজিশন</th>
+                    <th className="py-2.5 px-2.5 text-center">প্রোফাইল</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#eaedff] text-xs">
+                  {filteredSquad.map((player) => (
+                    <tr
+                      key={player.id}
+                      onClick={() => onSelectPlayer(player)}
+                      className="hover:bg-emerald-50/70 active:bg-emerald-100/60 transition-colors cursor-pointer group"
+                    >
+                      {/* Serial Number */}
+                      <td className="py-2 px-2.5 text-center font-bold text-[#005b34] bg-emerald-50/30">
+                        {player.sl ? toBengaliDigits(player.sl) : '-'}
+                      </td>
+
+                      {/* Name & Avatar */}
+                      <td className="py-2 px-3 font-extrabold text-[#131b2e]">
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={player.image}
+                            alt={player.name}
+                            className="w-7 h-7 rounded-full object-cover ring-1 ring-[#005b34]/20 flex-shrink-0"
+                          />
+                          <div className="min-w-0">
+                            <span className="block truncate text-xs sm:text-sm font-bold text-[#131b2e] group-hover:text-[#005b34]">
+                              {player.name}
+                            </span>
+                            {player.village && (
+                              <span className="text-[10px] text-[#3f4941] block truncate leading-none">
+                                {player.village}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Age (Highlighted in Red Badge) */}
+                      <td className="py-2 px-2 text-center">
+                        <span className="inline-block px-1.5 py-0.5 rounded bg-red-50 text-red-700 font-extrabold text-[11px] border border-red-200">
+                          {player.age ? `${toBengaliDigits(player.age)}` : '-'}
+                        </span>
+                      </td>
+
+                      {/* Jersey */}
+                      <td className="py-2 px-2 text-center">
+                        <span className="px-1.5 py-0.5 rounded bg-[#f2f3ff] text-[#005b34] font-bold text-[10px]">
+                          #{player.jersey}
+                        </span>
+                      </td>
+
+                      {/* Position */}
+                      <td className="py-2 px-2 text-[#3f4941] font-semibold text-[11px] truncate max-w-[110px]">
+                        {player.role}
+                      </td>
+
+                      {/* Action */}
+                      <td className="py-2 px-2.5 text-center">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectPlayer(player);
+                          }}
+                          className="px-2 py-1 rounded-md bg-[#005b34] hover:bg-[#137547] text-white text-[10px] font-bold flex items-center justify-center gap-0.5 mx-auto active:scale-95 transition-all shadow-2xs"
+                        >
+                          <span>দেখুন</span>
+                          <span className="material-symbols-outlined text-[12px]">chevron_right</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         ) : (
+          /* ATHLETIC CARD VIEW (2-COLUMN GRID WITH AGE & STATS) */
           <div className="grid grid-cols-2 gap-2.5">
             {filteredSquad.map((player) => {
               const isCoachCard = player.isCoach;
@@ -319,9 +471,16 @@ export const PlayersScreen: React.FC<PlayersScreenProps> = ({
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                         
-                        {/* Jersey Badge */}
-                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-[#005b34] font-score text-xs font-bold px-1.5 py-0.5 rounded">
-                          #{player.jersey}
+                        {/* Jersey & SL Badge */}
+                        <div className="absolute top-2 right-2 flex items-center gap-1">
+                          {player.sl && (
+                            <span className="bg-black/60 text-white font-score text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-xs">
+                              #{toBengaliDigits(player.sl)}
+                            </span>
+                          )}
+                          <span className="bg-white/95 text-[#005b34] font-score text-xs font-bold px-1.5 py-0.5 rounded shadow-xs">
+                            #{player.jersey}
+                          </span>
                         </div>
 
                         {/* Role Chip */}
@@ -335,60 +494,37 @@ export const PlayersScreen: React.FC<PlayersScreenProps> = ({
 
                       <div className="p-2.5 flex flex-col justify-between flex-1 gap-2">
                         <div>
-                          <h4 className="text-xs font-bold text-[#131b2e] leading-tight truncate">
-                            {player.name}
-                          </h4>
-                          <span className="text-[10px] text-[#3f4941] block mt-0.5">{player.team}</span>
+                          <div className="flex items-center justify-between gap-1">
+                            <h4 className="text-xs sm:text-sm font-bold text-[#131b2e] leading-tight truncate">
+                              {player.name}
+                            </h4>
+                            {player.age && (
+                              <span className="px-1.5 py-0.5 rounded bg-red-100 text-red-700 text-[10px] font-black flex-shrink-0">
+                                {toBengaliDigits(player.age)} বছর
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[10px] text-[#3f4941] block mt-0.5 truncate">{player.team}</span>
                         </div>
 
                         {/* Stats Row */}
                         <div className="grid grid-cols-2 gap-1 bg-[#f2f3ff] p-1.5 rounded text-center">
-                          {player.avgRuns && (
+                          {player.goals !== undefined ? (
                             <div>
-                              <span className="block text-[9px] text-[#3f4941]">গড় রান</span>
-                              <span className="font-score text-xs font-bold text-[#005b34]">{player.avgRuns}</span>
+                              <span className="block text-[9px] text-[#3f4941]">গোল</span>
+                              <span className="font-score text-xs font-bold text-[#ba1a1a]">{toBengaliDigits(player.goals)}</span>
                             </div>
-                          )}
-                          {player.wickets && (
-                            <div>
-                              <span className="block text-[9px] text-[#3f4941]">উইকেট</span>
-                              <span className="font-score text-xs font-bold text-[#855300]">{player.wickets}</span>
-                            </div>
-                          )}
-                          {player.cleanSheets && (
+                          ) : player.cleanSheets ? (
                             <div>
                               <span className="block text-[9px] text-[#3f4941]">ক্লিনশিট</span>
                               <span className="font-score text-xs font-bold text-[#005b34]">{player.cleanSheets}</span>
                             </div>
-                          )}
-                          {player.saveRate && (
-                            <div>
-                              <span className="block text-[9px] text-[#3f4941]">সেভ রেট</span>
-                              <span className="font-score text-xs font-bold text-[#855300]">{player.saveRate}</span>
-                            </div>
-                          )}
-                          {player.topSpeed && (
-                            <div>
-                              <span className="block text-[9px] text-[#3f4941]">টপ স্পিড</span>
-                              <span className="font-score text-xs font-bold text-[#005b34]">{player.topSpeed}</span>
-                            </div>
-                          )}
-                          {player.economy && (
-                            <div>
-                              <span className="block text-[9px] text-[#3f4941]">ইকোনমি</span>
-                              <span className="font-score text-xs font-bold text-[#855300]">{player.economy}</span>
-                            </div>
-                          )}
-                          {player.passAccuracy && (
-                            <div>
-                              <span className="block text-[9px] text-[#3f4941]">পাস নিখুঁত</span>
-                              <span className="font-score text-xs font-bold text-[#005b34]">{player.passAccuracy}</span>
-                            </div>
-                          )}
-                          {player.matches && !player.avgRuns && (
+                          ) : null}
+
+                          {player.matches && (
                             <div>
                               <span className="block text-[9px] text-[#3f4941]">ম্যাচ</span>
-                              <span className="font-score text-xs font-bold text-[#855300]">{player.matches}</span>
+                              <span className="font-score text-xs font-bold text-[#005b34]">{toBengaliDigits(player.matches)}</span>
                             </div>
                           )}
                         </div>
@@ -398,7 +534,7 @@ export const PlayersScreen: React.FC<PlayersScreenProps> = ({
                             e.stopPropagation();
                             onSelectPlayer(player);
                           }}
-                          className="w-full py-1.5 rounded-md bg-[#eaedff] hover:bg-[#dae2fd] text-[#005b34] text-xs font-bold flex items-center justify-center gap-1 transition-colors"
+                          className="w-full py-1.5 rounded-md bg-[#eaedff] hover:bg-[#005b34] hover:text-white text-[#005b34] text-xs font-bold flex items-center justify-center gap-1 transition-colors"
                         >
                           <span>প্রোফাইল</span>
                           <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
@@ -409,6 +545,61 @@ export const PlayersScreen: React.FC<PlayersScreenProps> = ({
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* 5. ORIGINAL DOCUMENT MODAL (৩২ খেলোয়াড় তালিকা) */}
+        {showDocModal && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 animate-in fade-in duration-200"
+            onClick={() => setShowDocModal(false)}
+          >
+            <div 
+              className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-3.5 bg-gradient-to-r from-[#005b34] to-[#137547] text-white flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[20px]">assignment</span>
+                  <div>
+                    <h3 className="text-sm font-bold leading-tight">শিয়ালকোল খেলোয়াড় তালিকা</h3>
+                    <p className="text-[10px] text-emerald-200">মূল অফিশিয়াল স্কোয়াড নথি (৩২ জন)</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowDocModal(false)}
+                  className="w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30"
+                >
+                  <span className="material-symbols-outlined text-[18px]">close</span>
+                </button>
+              </div>
+
+              <div className="overflow-y-auto p-4 flex flex-col items-center bg-[#faf8ff]">
+                <img
+                  src={PLAYER_LIST_DOCUMENT}
+                  alt="শিয়ালকোল খেলোয়াড় তালিকা ডকুমেন্ট"
+                  className="w-full max-w-sm rounded-lg shadow-md border border-[#bec9bf]/40 object-contain"
+                />
+                <div className="w-full mt-3 p-3 bg-white rounded-xl border border-emerald-200 text-xs text-[#131b2e]">
+                  <p className="font-bold text-[#005b34] flex items-center gap-1 mb-1">
+                    <span className="material-symbols-outlined text-[16px]">verified</span>
+                    <span>অফিশিয়াল ৩২ জন খেলোয়াড় তালিকাভুক্ত</span>
+                  </p>
+                  <p className="text-[11px] text-[#3f4941] leading-relaxed">
+                    এই তালিকার সকল খেলোয়াড়ের নাম, বয়স, জার্সি নং ও পজিশন ডেটাবেজে সক্রিয় রয়েছে।
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3 bg-white border-t border-[#bec9bf]/20 flex justify-end">
+                <button
+                  onClick={() => setShowDocModal(false)}
+                  className="px-4 py-1.5 rounded-lg bg-[#005b34] text-white text-xs font-bold"
+                >
+                  বন্ধ করুন
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CLUB_LOGO, NEWS_STORIES, GALLERY_MOMENTS } from '../data/mockData';
+import { CLUB_LOGO, NEWS_STORIES, GALLERY_MOMENTS, CONVENER_DATA } from '../data/mockData';
 import { TabType } from '../types';
 
 interface HomeScreenProps {
@@ -18,6 +18,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [reminderSet, setReminderSet] = useState(false);
   const [selectedNews, setSelectedNews] = useState<typeof NEWS_STORIES[0] | null>(null);
   const [showHighlights, setShowHighlights] = useState(false);
+  const [galleryFilter, setGalleryFilter] = useState<'all' | 'office' | 'match' | 'ceremony'>('all');
 
   const toggleReminder = () => {
     const nextState = !reminderSet;
@@ -94,26 +95,30 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
         {/* Convener Leadership Strip - Red & Green Styled */}
         <div className="mt-3.5 bg-gradient-to-r from-emerald-950/90 via-black/40 to-red-950/50 backdrop-blur-md rounded-xl p-2.5 flex items-center justify-between gap-2 border border-red-500/30 shadow-md">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white flex-shrink-0 shadow">
-              <span className="material-symbols-outlined text-[18px]">shield_person</span>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="relative w-9 h-9 rounded-full overflow-hidden ring-2 ring-red-500 shadow flex-shrink-0 bg-white">
+              <img
+                src={CONVENER_DATA.image}
+                alt={CONVENER_DATA.name}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[10px] text-red-300 font-bold uppercase tracking-wider flex items-center gap-1">
                 আহ্বায়ক কমিটি ২০২৬
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               </span>
-              <span className="text-xs font-black text-white truncate">আহ্বায়ক: মোঃ আনিসুর রহমান</span>
+              <span className="text-xs font-black text-white truncate">আহ্বায়ক: {CONVENER_DATA.name}</span>
             </div>
           </div>
           {onOpenAdmin && (
             <button
               onClick={onOpenAdmin}
               className="flex-shrink-0 px-3 py-1.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-[11px] font-black uppercase tracking-wider flex items-center gap-1 active:scale-95 transition-all shadow-md border border-red-300/40"
-              title="আহ্বায়ক অ্যাডমিন প্যানেল"
+              title="অ্যাডমিন প্যানেল (এস এ সুলতান)"
             >
               <span className="material-symbols-outlined text-[14px]">admin_panel_settings</span>
-              অ্যাডমিন
+              অ্যাডমিন প্যানেল
             </button>
           )}
         </div>
@@ -348,39 +353,120 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       </section>
 
-      {/* 6. PHOTO GALLERY HIGHLIGHTS */}
+      {/* 6. PHOTO GALLERY & OFFICE DOCUMENTS */}
       <section className="px-4 mt-6">
-        <div className="flex items-center justify-between mb-2.5">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[#855300] text-[20px]">photo_camera</span>
+            <span className="material-symbols-outlined text-red-600 text-[20px]">photo_camera</span>
             <h3 className="text-sm font-bold text-[#131b2e] tracking-tight">গ্যালারি ও স্মরণীয় মুহূর্ত</h3>
           </div>
-          <span className="text-xs text-[#3f4941]">মুহূর্তসমূহ</span>
+          <span className="text-[11px] font-bold text-[#005b34] bg-emerald-100 px-2.5 py-0.5 rounded-full">
+            {GALLERY_MOMENTS.length}টি আইটেম
+          </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5">
-          {GALLERY_MOMENTS.map((moment) => (
-            <div
-              key={moment.id}
-              onClick={() => onOpenPhoto(moment)}
-              className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#bec9bf]/20 flex flex-col cursor-pointer group hover:shadow-md transition-all active:scale-[0.98]"
-            >
-              <div className="relative w-full h-28 bg-[#eaedff] overflow-hidden">
-                <img
-                  src={moment.image}
-                  alt={moment.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/60 text-white text-[10px] font-bold backdrop-blur-sm">
-                  {moment.tag}
-                </span>
+        {/* Filter Pills: All, Office Gallery, Match, Ceremony */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 pt-0.5">
+          <button
+            onClick={() => setGalleryFilter('all')}
+            className={`px-3 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${
+              galleryFilter === 'all'
+                ? 'bg-[#005b34] text-white shadow-sm'
+                : 'bg-white text-[#3f4941] hover:bg-slate-100 border border-[#bec9bf]/20'
+            }`}
+          >
+            সব ছবি ({GALLERY_MOMENTS.length})
+          </button>
+          <button
+            onClick={() => setGalleryFilter('office')}
+            className={`px-3 py-1 rounded-full text-[11px] font-bold whitespace-nowrap flex items-center gap-1 transition-all ${
+              galleryFilter === 'office'
+                ? 'bg-red-600 text-white shadow-sm'
+                : 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[13px]">folder_special</span>
+            অফিস গ্যালারি (ডকুমেন্টস)
+          </button>
+          <button
+            onClick={() => setGalleryFilter('match')}
+            className={`px-3 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${
+              galleryFilter === 'match'
+                ? 'bg-[#005b34] text-white shadow-sm'
+                : 'bg-white text-[#3f4941] hover:bg-slate-100 border border-[#bec9bf]/20'
+            }`}
+          >
+            ম্যাচ ও মাঠ
+          </button>
+          <button
+            onClick={() => setGalleryFilter('ceremony')}
+            className={`px-3 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${
+              galleryFilter === 'ceremony'
+                ? 'bg-[#005b34] text-white shadow-sm'
+                : 'bg-white text-[#3f4941] hover:bg-slate-100 border border-[#bec9bf]/20'
+            }`}
+          >
+            ট্রফি ও সম্মাননা
+          </button>
+        </div>
+
+        {/* Gallery Grid */}
+        <div className="grid grid-cols-2 gap-2.5 mt-1">
+          {GALLERY_MOMENTS.filter((item) => {
+            if (galleryFilter === 'all') return true;
+            return item.category === galleryFilter;
+          }).map((moment, index) => {
+            const isOffice = moment.category === 'office';
+            const isFeatured = index === 0;
+            return (
+              <div
+                key={moment.id}
+                onClick={() => onOpenPhoto(moment)}
+                className={`bg-white rounded-xl overflow-hidden shadow-sm border ${
+                  isOffice ? 'border-red-300 ring-1 ring-red-400/40 bg-gradient-to-b from-red-50/20 to-white' : 'border-[#bec9bf]/20'
+                } flex flex-col cursor-pointer group hover:shadow-md transition-all active:scale-[0.98] ${
+                  isFeatured ? 'col-span-2' : 'col-span-1'
+                }`}
+              >
+                <div className={`relative w-full ${isFeatured ? 'h-48 sm:h-52' : 'h-32'} bg-[#eaedff] overflow-hidden`}>
+                  <img
+                    src={moment.image}
+                    alt={moment.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
+                  <span
+                    className={`absolute bottom-2 left-2 px-2 py-0.5 rounded-full text-white text-[10px] font-bold backdrop-blur-sm flex items-center gap-1 ${
+                      isOffice ? 'bg-red-600/90' : 'bg-black/70'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[12px]">
+                      {isOffice ? 'description' : 'sports_soccer'}
+                    </span>
+                    {moment.tag}
+                  </span>
+
+                  {isOffice && (
+                    <span className="absolute top-2 right-2 px-2 py-0.5 rounded bg-amber-400 text-amber-950 font-black text-[9px] shadow-sm tracking-wide">
+                      SUFL-26 অফিসিয়াল
+                    </span>
+                  )}
+                </div>
+                <div className="p-2.5">
+                  <div className="flex items-center justify-between gap-1">
+                    <p className="text-xs font-bold text-[#131b2e] truncate">{moment.title}</p>
+                    {isOffice && (
+                      <span className="text-[10px] text-red-600 font-bold flex-shrink-0 flex items-center gap-0.5">
+                        <span className="material-symbols-outlined text-[13px]">visibility</span>
+                        দেখুন
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-[#3f4941] mt-0.5 block truncate">{moment.sub}</span>
+                </div>
               </div>
-              <div className="p-2">
-                <p className="text-xs font-bold text-[#131b2e] truncate">{moment.title}</p>
-                <span className="text-[10px] text-[#3f4941] mt-0.5 block">{moment.sub}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

@@ -4,6 +4,7 @@ import { ClubNotice, Facility } from '../types';
 
 interface ClubContactScreenProps {
   onOpenNotice: (notice: ClubNotice) => void;
+  onOpenPhoto?: (photo: { title: string; sub?: string; image: string; caption?: string; category?: string; tag?: string }) => void;
   onShowToast: (msg: string) => void;
   notices?: ClubNotice[];
   onOpenAdmin?: () => void;
@@ -18,6 +19,7 @@ interface ClubContactScreenProps {
 
 export const ClubContactScreen: React.FC<ClubContactScreenProps> = ({
   onOpenNotice,
+  onOpenPhoto,
   onShowToast,
   notices,
   onOpenAdmin,
@@ -33,6 +35,8 @@ export const ClubContactScreen: React.FC<ClubContactScreenProps> = ({
 
   const [submitted, setSubmitted] = useState(false);
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null);
+  const [copiedBkash, setCopiedBkash] = useState(false);
+  const [membershipTrxId, setMembershipTrxId] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,6 +157,101 @@ export const ClubContactScreen: React.FC<ClubContactScreenProps> = ({
                 </button>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 2.5 OFFICE GALLERY & OFFICIAL REGISTRATION FORM */}
+      <section className="px-4 mt-5">
+        <div className="bg-gradient-to-r from-red-50/70 via-white to-emerald-50/50 rounded-xl p-3.5 shadow-sm border border-red-200">
+          <div className="flex items-center justify-between mb-2.5">
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[20px] text-red-600">folder_special</span>
+              <h2 className="text-sm font-black text-[#131b2e]">অফিস গ্যালারি ও অফিসিয়াল নথি</h2>
+            </div>
+            <span className="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full border border-red-200">
+              SUFL-26 অফিসিয়াল
+            </span>
+          </div>
+
+          {/* Form Card */}
+          <div className="bg-white rounded-xl p-3 border border-[#bec9bf]/30 shadow-sm flex flex-col sm:flex-row gap-3 items-center">
+            <div 
+              onClick={() => {
+                if (onOpenPhoto) {
+                  onOpenPhoto({
+                    title: 'খেলোয়াড় নিবন্ধন ফরম ২০২৬',
+                    sub: 'শিয়ালকোল ইউনিয়ন আন্তঃ ফুটবল লীগ (২য় আসর)',
+                    image: '/assets/aistudio/20133_5f36db33.jpg',
+                    caption: 'শিয়ালকোল ইউনিয়ন আন্তঃ ফুটবল লীগ-২০২৬ইং দ্বিতীয় আসরের অফিসিয়াল খেলোয়াড় নিবন্ধন ফরম (SUFL-26)। অফিস নথি ও রেকর্ড।',
+                    category: 'office',
+                    tag: 'অফিস গ্যালারি'
+                  });
+                }
+              }}
+              className="relative w-full sm:w-28 h-40 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0 cursor-pointer group shadow-inner"
+            >
+              <img
+                src="/assets/aistudio/20133_5f36db33.jpg"
+                alt="খেলোয়াড় নিবন্ধন ফরম ২০২৬"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                <span className="material-symbols-outlined text-[24px]">zoom_in</span>
+              </div>
+              <span className="absolute bottom-1 right-1 bg-black/70 text-white text-[9px] px-1.5 py-0.5 rounded font-mono">
+                SUFL-26
+              </span>
+            </div>
+
+            <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold">
+                    নিবন্ধন ফরম
+                  </span>
+                  <span className="text-[10px] text-[#3f4941] font-semibold">
+                    শিয়ালকোল আন্তঃ ফুটবল লীগ ২০২৬
+                  </span>
+                </div>
+                <h3 className="text-xs sm:text-sm font-bold text-[#131b2e] mt-1 leading-snug">
+                  শিয়ালকোল ইউনিয়ন আন্তঃ ফুটবল লীগ-২০২৬ইং (২য় আসর)
+                </h3>
+                <p className="text-[11px] text-[#3f4941] mt-1 leading-relaxed">
+                  খেলোয়াড় নিবন্ধন ফরম (SUFL-26)। সকল দলের অধিনায়ক ও ম্যানেজারদের এই ফরম সংগ্রহ করে খেলোয়াড়দের ছবি ও তথ্যসহ ক্লাবে জমা দেওয়ার অনুরোধ করা যাচ্ছে।
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onOpenPhoto) {
+                      onOpenPhoto({
+                        title: 'খেলোয়াড় নিবন্ধন ফরম ২০২৬',
+                        sub: 'শিয়ালকোল ইউনিয়ন আন্তঃ ফুটবল লীগ (২য় আসর)',
+                        image: '/assets/aistudio/20133_5f36db33.jpg',
+                        caption: 'শিয়ালকোল ইউনিয়ন আন্তঃ ফুটবল লীগ-২০২৬ইং দ্বিতীয় আসরের অফিসিয়াল খেলোয়াড় নিবন্ধন ফরম (SUFL-26)। অফিস নথি ও রেকর্ড।',
+                        category: 'office',
+                        tag: 'অফিস গ্যালারি'
+                      });
+                    }
+                  }}
+                  className="flex-1 py-1.5 px-2.5 rounded-lg bg-[#005b34] hover:bg-[#137547] text-white text-[11px] font-bold shadow-sm flex items-center justify-center gap-1 active:scale-95 transition-all"
+                >
+                  <span className="material-symbols-outlined text-[15px]">zoom_in</span>
+                  বড় করে দেখুন
+                </button>
+                <a
+                  href="/assets/aistudio/20133_5f36db33.jpg"
+                  download="SUFL2026_Player_Registration_Form.jpg"
+                  className="py-1.5 px-3 rounded-lg bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold shadow-sm flex items-center justify-center gap-1 active:scale-95 transition-all"
+                >
+                  <span className="material-symbols-outlined text-[15px]">download</span>
+                  ডাউনলোড
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -424,6 +523,54 @@ export const ClubContactScreen: React.FC<ClubContactScreenProps> = ({
                 </div>
               </div>
 
+              {/* bKash Membership Fee Box */}
+              <div className="rounded-xl border border-pink-300 bg-gradient-to-br from-pink-50 via-rose-50/50 to-white p-3 shadow-sm space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded bg-[#e2136e] text-white flex items-center justify-center font-bold text-[10px]">
+                      bK
+                    </div>
+                    <span className="text-xs font-bold text-[#e2136e]">সদস্যপদ ফি (bKash Send Money)</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-[#005b34] bg-emerald-100 px-2 py-0.5 rounded">
+                    ফি: {formData.membershipType === 'lifetime' ? '৳১,০০০' : '৳১০০'}
+                  </span>
+                </div>
+
+                <div className="bg-white p-2 rounded-lg border border-pink-200 flex items-center justify-between gap-2">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-slate-500">বিকাশ পার্সোনাল নম্বর:</span>
+                    <span className="text-sm font-black text-[#e2136e] font-mono select-all">01712317671</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText('01712317671');
+                      setCopiedBkash(true);
+                      onShowToast('বিকাশ নম্বর 01712317671 কপি হয়েছে! ✅');
+                      setTimeout(() => setCopiedBkash(false), 2000);
+                    }}
+                    className={`px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 text-white transition-all ${
+                      copiedBkash ? 'bg-emerald-600' : 'bg-[#e2136e] hover:bg-[#c90d5f]'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[13px]">{copiedBkash ? 'check' : 'content_copy'}</span>
+                    <span>{copiedBkash ? 'কপি হয়েছে' : 'কপি করুন'}</span>
+                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-700 mb-0.5">বিকাশ TrxID (যদি ফি পরিশোধ করে থাকেন)</label>
+                  <input
+                    type="text"
+                    value={membershipTrxId}
+                    onChange={(e) => setMembershipTrxId(e.target.value)}
+                    placeholder="উদা: B7K9X2P4M"
+                    className="w-full px-2.5 py-1.5 rounded bg-white text-xs border border-pink-200 outline-none uppercase font-mono focus:ring-1 focus:ring-[#e2136e]"
+                  />
+                </div>
+              </div>
+
               {/* Submit Button */}
               <button
                 type="submit"
@@ -491,29 +638,39 @@ export const ClubContactScreen: React.FC<ClubContactScreenProps> = ({
 
           <div className="space-y-1.5 text-xs text-[#131b2e]">
             <a
-              href="tel:+8801712345678"
-              className="flex items-center gap-2.5 p-2 rounded-lg bg-white hover:bg-[#eaedff] transition-colors border border-[#bec9bf]/10 shadow-sm"
+              href="tel:01712317671"
+              className="flex items-center justify-between gap-2.5 p-2 rounded-lg bg-white hover:bg-[#eaedff] transition-colors border border-[#bec9bf]/10 shadow-sm"
             >
-              <div className="w-8 h-8 rounded-full bg-[#005b34]/10 text-[#005b34] flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-[18px]">phone_in_talk</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-[#005b34]/10 text-[#005b34] flex items-center justify-center flex-shrink-0">
+                  <span className="material-symbols-outlined text-[18px]">phone_in_talk</span>
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[10px] text-[#3f4941]">সরাসরি কল করুন</span>
+                  <span className="text-xs font-bold text-[#131b2e] font-mono">+৮৮ ০১৭১২-৩১৭৬৭১</span>
+                </div>
               </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-[10px] text-[#3f4941]">সরাসরি কল করুন</span>
-                <span className="text-xs font-bold text-[#131b2e] font-mono">+৮৮০১৭১২-৩৪৫৬৭৮</span>
-              </div>
+              <span className="px-2 py-0.5 rounded bg-emerald-100 text-[#005b34] text-[10px] font-bold">
+                কল করুন
+              </span>
             </a>
 
             <a
-              href="mailto:info@shialkolsports.org"
-              className="flex items-center gap-2.5 p-2 rounded-lg bg-white hover:bg-[#eaedff] transition-colors border border-[#bec9bf]/10 shadow-sm"
+              href="mailto:sasultan6522@gmail.com"
+              className="flex items-center justify-between gap-2.5 p-2 rounded-lg bg-white hover:bg-[#eaedff] transition-colors border border-[#bec9bf]/10 shadow-sm"
             >
-              <div className="w-8 h-8 rounded-full bg-[#fea619]/20 text-[#855300] flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-[18px]">mail</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-[#fea619]/20 text-[#855300] flex items-center justify-center flex-shrink-0">
+                  <span className="material-symbols-outlined text-[18px]">mail</span>
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[10px] text-[#3f4941]">অফিসিয়াল ইমেইল</span>
+                  <span className="text-xs font-semibold text-[#131b2e] truncate font-mono">sasultan6522@gmail.com</span>
+                </div>
               </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-[10px] text-[#3f4941]">অফিসিয়াল ইমেইল</span>
-                <span className="text-xs font-semibold text-[#131b2e] truncate">info@shialkolsports.org</span>
-              </div>
+              <span className="px-2 py-0.5 rounded bg-amber-100 text-[#855300] text-[10px] font-bold">
+                মেইল পাঠান
+              </span>
             </a>
 
             <div className="flex items-center gap-2.5 p-2 rounded-lg bg-white border border-[#bec9bf]/10 shadow-sm">
@@ -554,7 +711,7 @@ export const ClubContactScreen: React.FC<ClubContactScreenProps> = ({
               </a>
 
               <a
-                href="https://whatsapp.com"
+                href="https://wa.me/8801712317671"
                 target="_blank"
                 rel="noreferrer"
                 className="flex flex-col items-center justify-center p-2 rounded-lg bg-white hover:bg-[#9cf6bc]/40 text-[#1a5939] transition-colors text-center border border-[#bec9bf]/10 shadow-sm active:scale-95"

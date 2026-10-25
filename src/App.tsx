@@ -152,6 +152,7 @@ export default function App() {
           {activeTab === 'club-contact' && (
             <ClubContactScreen
               onOpenNotice={(n) => setSelectedNotice(n)}
+              onOpenPhoto={(photo) => setSelectedPhoto(photo)}
               onShowToast={showToast}
               notices={notices}
               onOpenAdmin={() => setIsAdminOpen(true)}
@@ -224,8 +225,8 @@ export default function App() {
         <TrialApplicationModal
           isOpen={isTrialOpen}
           onClose={() => setIsTrialOpen(false)}
-          onSuccess={(candidate) =>
-            showToast(`ধন্যবাদ ${candidate}! ট্রায়াল রেজিস্ট্রেশন নিশ্চিত করা হয়েছে।`)
+          onSuccess={(candidate, fee) =>
+            showToast(`ধন্যবাদ ${candidate}! ${fee ? `${fee} ফিসহ ` : ''}রেজিস্ট্রেশন আবেদন সফলভাবে গৃহীত হয়েছে। 🌟`)
           }
         />
 

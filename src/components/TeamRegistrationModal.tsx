@@ -18,6 +18,9 @@ export const TeamRegistrationModal: React.FC<TeamRegistrationModalProps> = ({
   const [managerName, setManagerName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [playerCount, setPlayerCount] = useState('২');
+  const [senderBkash, setSenderBkash] = useState('');
+  const [trxId, setTrxId] = useState('');
+  const [copied, setCopied] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   if (!isOpen) return null;
@@ -137,6 +140,65 @@ export const TeamRegistrationModal: React.FC<TeamRegistrationModalProps> = ({
                 placeholder="০১৭১২-XXXXXX"
                 className="w-full px-3 py-2.5 rounded-lg bg-[#f2f3ff] text-[#131b2e] text-sm outline-none focus:bg-white focus:ring-2 focus:ring-[#005b34]/30 transition-all border border-[#bec9bf]/20"
               />
+            </div>
+
+            {/* Registration Fee & bKash Box */}
+            <div className="rounded-xl border border-pink-300 bg-gradient-to-br from-pink-50 via-rose-50/50 to-white p-3 shadow-sm space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded bg-[#e2136e] text-white flex items-center justify-center font-bold text-[10px]">
+                    bK
+                  </div>
+                  <span className="text-xs font-bold text-[#e2136e]">দল এন্ট্রি / রেজিস্ট্রেশন ফি (bKash)</span>
+                </div>
+                <span className="text-[10px] font-bold text-[#005b34] bg-emerald-100 px-2 py-0.5 rounded">
+                  নির্ধারিত ফি: ৳৫০০
+                </span>
+              </div>
+
+              <div className="bg-white p-2 rounded-lg border border-pink-200 flex items-center justify-between gap-2">
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-slate-500">বিকাশ পার্সোনাল নম্বর (Send Money):</span>
+                  <span className="text-sm font-black text-[#e2136e] font-mono select-all">01712317671</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText('01712317671');
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className={`px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 text-white transition-all ${
+                    copied ? 'bg-emerald-600' : 'bg-[#e2136e] hover:bg-[#c90d5f]'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[13px]">{copied ? 'check' : 'content_copy'}</span>
+                  <span>{copied ? 'কপি হয়েছে' : 'কপি করুন'}</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 pt-0.5">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-700 mb-0.5">প্রেরকের বিকাশ নম্বর</label>
+                  <input
+                    type="tel"
+                    value={senderBkash}
+                    onChange={(e) => setSenderBkash(e.target.value)}
+                    placeholder="০১৭১২-XXXXXX"
+                    className="w-full px-2 py-1.5 rounded bg-white text-xs border border-pink-200 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-700 mb-0.5">বিকাশ TrxID</label>
+                  <input
+                    type="text"
+                    value={trxId}
+                    onChange={(e) => setTrxId(e.target.value)}
+                    placeholder="উদা: B7K9X2P4M"
+                    className="w-full px-2 py-1.5 rounded bg-white text-xs border border-pink-200 outline-none uppercase font-mono"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="pt-2">
