@@ -4,8 +4,25 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { TabType, Player, ClubNotice, MatchScore, MembershipApplication, TeamRegistration } from './types';
-import { LIVE_MATCH, NOTICES, INITIAL_MEMBERSHIP_APPLICATIONS, INITIAL_TEAM_REGISTRATIONS } from './data/mockData';
+import { TabType, Player, ClubNotice, MatchScore, MembershipApplication, TeamRegistration, Fixture } from './types';
+import { LIVE_MATCH, NOTICES, INITIAL_MEMBERSHIP_APPLICATIONS, INITIAL_TEAM_REGISTRATIONS, FIXTURES } from './data/mockData';
+import {
+  seedDatabaseIfEmpty,
+  subscribeToLiveMatch,
+  saveLiveMatchToDb,
+  subscribeToFixtures,
+  saveFixtureToDb,
+  deleteFixtureFromDb,
+  subscribeToNotices,
+  saveNoticeToDb,
+  deleteNoticeFromDb,
+  subscribeToMembershipApplications,
+  saveMembershipApplicationToDb,
+  updateMembershipApplicationStatusInDb,
+  subscribeToTeamRegistrations,
+  saveTeamRegistrationToDb,
+  updateTeamRegistrationStatusInDb,
+} from './firebase';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
 import { HomeScreen } from './components/HomeScreen';
@@ -32,8 +49,9 @@ export default function App() {
     caption?: string;
   } | null>(null);
 
-  // Live and Admin Data States
+  // Live and Admin Data States (Connected to Firestore Realtime)
   const [liveMatch, setLiveMatch] = useState<MatchScore>(LIVE_MATCH);
+  const [fixtures, setFixtures] = useState<Fixture[]>(FIXTURES);
   const [notices, setNotices] = useState<ClubNotice[]>(NOTICES);
   const [membershipApplications, setMembershipApplications] = useState<MembershipApplication[]>(
     INITIAL_MEMBERSHIP_APPLICATIONS
@@ -63,6 +81,59 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [toastMessage]);
 
+  // Real-time Firestore Subscriptions
+  useEffect(() => {
+    // 1. Initialize Firestore collections if empty
+    seedDatabaseIfEmpty(
+      LIVE_MATCH,
+      FIXTURES,
+      NOTICES,
+      INITIAL_MEMBERSHIP_APPLICATIONS,
+      INITIAL_TEAM_REGISTRATIONS
+    );
+
+    // 2. Real-time Live Match listener
+    const unsubMatch = subscribeToLiveMatch((updatedMatch) => {
+      setLiveMatch(updatedMatch);
+    });
+
+    // 3. Real-time Fixtures listener
+    const unsubFixtures = subscribeToFixtures((loadedFixtures) => {
+      if (loadedFixtures && loadedFixtures.length > 0) {
+        setFixtures(loadedFixtures);
+      }
+    });
+
+    // 4. Real-time Notices listener
+    const unsubNotices = subscribeToNotices((loadedNotices) => {
+      if (loadedNotices && loadedNotices.length > 0) {
+        setNotices(loadedNotices);
+      }
+    });
+
+    // 5. Real-time Membership Applications listener
+    const unsubApps = subscribeToMembershipApplications((loadedApps) => {
+      if (loadedApps && loadedApps.length > 0) {
+        setMembershipApplications(loadedApps);
+      }
+    });
+
+    // 6. Real-time Team Registrations listener
+    const unsubTeams = subscribeToTeamRegistrations((loadedTeams) => {
+      if (loadedTeams && loadedTeams.length > 0) {
+        setTeamRegistrations(loadedTeams);
+      }
+    });
+
+    return () => {
+      unsubMatch();
+      unsubFixtures();
+      unsubNotices();
+      unsubApps();
+      unsubTeams();
+    };
+  }, []);
+
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -73,7 +144,65 @@ export default function App() {
     setIsTeamRegOpen(true);
   };
 
-  const handleNewApplication = (app: {
+  // Live Match Mutation
+  const handleUpdateLiveMatch = async (updated: MatchScore) => {
+    setLiveMatch(updated);
+    try {
+      await saveLiveMatchToDb(updated);
+    } catch (e) {
+      console.error('Failed to update live match in Firestore:', e);
+    }
+  };
+
+  // Fixtures Mutations
+  const handleAddFixture = async (fixture: Fixture) => {
+    setFixtures((prev) => [fixture, ...prev]);
+    try {
+      await saveFixtureToDb(fixture);
+    } catch (e) {
+      console.error('Failed to save fixture to Firestore:', e);
+    }
+  };
+
+  const handleUpdateFixture = async (fixture: Fixture) => {
+    setFixtures((prev) => prev.map((f) => (f.id === fixture.id ? fixture : f)));
+    try {
+      await saveFixtureToDb(fixture);
+    } catch (e) {
+      console.error('Failed to update fixture in Firestore:', e);
+    }
+  };
+
+  const handleDeleteFixture = async (id: string) => {
+    setFixtures((prev) => prev.filter((f) => f.id !== id));
+    try {
+      await deleteFixtureFromDb(id);
+    } catch (e) {
+      console.error('Failed to delete fixture in Firestore:', e);
+    }
+  };
+
+  // Notice Mutations
+  const handleAddNotice = async (notice: ClubNotice) => {
+    setNotices((prev) => [notice, ...prev]);
+    try {
+      await saveNoticeToDb(notice);
+    } catch (e) {
+      console.error('Failed to save notice to Firestore:', e);
+    }
+  };
+
+  const handleDeleteNotice = async (id: string) => {
+    setNotices((prev) => prev.filter((n) => n.id !== id));
+    try {
+      await deleteNoticeFromDb(id);
+    } catch (e) {
+      console.error('Failed to delete notice from Firestore:', e);
+    }
+  };
+
+  // Membership Application Mutations
+  const handleNewApplication = async (app: {
     name: string;
     phone: string;
     sport: string;
@@ -90,23 +219,55 @@ export default function App() {
       date: 'আজ, ২০২৬',
       status: 'pending',
     };
-    setMembershipApplications([newApp, ...membershipApplications]);
+    setMembershipApplications((prev) => [newApp, ...prev]);
+    try {
+      await saveMembershipApplicationToDb(newApp);
+    } catch (e) {
+      console.error('Failed to save membership application in Firestore:', e);
+    }
   };
 
-  const handleUpdateApplicationStatus = (id: string, status: 'approved' | 'rejected') => {
+  const handleUpdateApplicationStatus = async (id: string, status: 'approved' | 'rejected') => {
     setMembershipApplications((prev) =>
       prev.map((app) => (app.id === id ? { ...app, status } : app))
     );
+    try {
+      await updateMembershipApplicationStatusInDb(id, status);
+    } catch (e) {
+      console.error('Failed to update application status in Firestore:', e);
+    }
   };
 
-  const handleUpdateTeamStatus = (id: string, status: 'approved') => {
+  // Team Registration Mutations
+  const handleTeamRegSuccess = async (team: string, tournament: string) => {
+    const newTeam: TeamRegistration = {
+      id: `team-${Date.now()}`,
+      teamName: team,
+      tournament: tournament,
+      managerName: 'অনলাইন আবেদনকারী',
+      contactNumber: '০১৭XXXXXXXX',
+      playerCount: '২ জন',
+      date: 'আজ, ২০২৬',
+      status: 'pending',
+    };
+    setTeamRegistrations((prev) => [newTeam, ...prev]);
+    showToast(`অভিনন্দন! "${team}" দল সফলভাবে "${tournament}"-এ নিবন্ধিত হয়েছে।`);
+    try {
+      await saveTeamRegistrationToDb(newTeam);
+    } catch (e) {
+      console.error('Failed to save team registration to Firestore:', e);
+    }
+  };
+
+  const handleUpdateTeamStatus = async (id: string, status: 'approved') => {
     setTeamRegistrations((prev) =>
       prev.map((team) => (team.id === id ? { ...team, status } : team))
     );
-  };
-
-  const handleAddNotice = (notice: ClubNotice) => {
-    setNotices([notice, ...notices]);
+    try {
+      await updateTeamRegistrationStatusInDb(id, status);
+    } catch (e) {
+      console.error('Failed to update team status in Firestore:', e);
+    }
   };
 
   return (
@@ -130,6 +291,8 @@ export default function App() {
               onOpenPhoto={(photo) => setSelectedPhoto(photo)}
               onShowToast={showToast}
               onOpenAdmin={() => setIsAdminOpen(true)}
+              liveMatch={liveMatch}
+              fixtures={fixtures}
             />
           )}
 
@@ -138,6 +301,7 @@ export default function App() {
               onOpenTeamRegistration={handleOpenTeamReg}
               onShowToast={showToast}
               liveMatch={liveMatch}
+              fixtures={fixtures}
             />
           )}
 
@@ -195,20 +359,7 @@ export default function App() {
           isOpen={isTeamRegOpen}
           preselectedTournament={preselectedTournament}
           onClose={() => setIsTeamRegOpen(false)}
-          onSuccess={(team, tournament) => {
-            const newTeam: TeamRegistration = {
-              id: `team-${Date.now()}`,
-              teamName: team,
-              tournament: tournament,
-              managerName: 'অনলাইন আবেদনকারী',
-              contactNumber: '০১৭XXXXXXXX',
-              playerCount: '২ জন',
-              date: 'আজ, ২০২৬',
-              status: 'pending',
-            };
-            setTeamRegistrations([newTeam, ...teamRegistrations]);
-            showToast(`অভিনন্দন! "${team}" দল সফলভাবে "${tournament}"-এ নিবন্ধিত হয়েছে।`);
-          }}
+          onSuccess={handleTeamRegSuccess}
         />
 
         <NotificationModal
@@ -230,14 +381,19 @@ export default function App() {
           }
         />
 
-        {/* Admin Control Panel for Convener Md Anisur Rahaman 2026 */}
+        {/* Admin Control Panel for SA Sultan */}
         <AdminPanel
           isOpen={isAdminOpen}
           onClose={() => setIsAdminOpen(false)}
           liveMatch={liveMatch}
-          onUpdateLiveMatch={(updated) => setLiveMatch(updated)}
+          onUpdateLiveMatch={handleUpdateLiveMatch}
+          fixtures={fixtures}
+          onAddFixture={handleAddFixture}
+          onUpdateFixture={handleUpdateFixture}
+          onDeleteFixture={handleDeleteFixture}
           notices={notices}
           onAddNotice={handleAddNotice}
+          onDeleteNotice={handleDeleteNotice}
           membershipApplications={membershipApplications}
           onUpdateApplicationStatus={handleUpdateApplicationStatus}
           teamRegistrations={teamRegistrations}

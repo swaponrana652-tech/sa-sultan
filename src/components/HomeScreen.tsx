@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { CLUB_LOGO, NEWS_STORIES, GALLERY_MOMENTS, CONVENER_DATA } from '../data/mockData';
-import { TabType } from '../types';
+import { CLUB_LOGO, NEWS_STORIES, GALLERY_MOMENTS, CONVENER_DATA, LIVE_MATCH, toBengaliDigits } from '../data/mockData';
+import { TabType, MatchScore, Fixture } from '../types';
 
 interface HomeScreenProps {
   onNavigateTab: (tab: TabType) => void;
   onOpenPhoto: (photo: { title: string; sub?: string; image: string; caption?: string }) => void;
   onShowToast: (msg: string) => void;
   onOpenAdmin?: () => void;
+  liveMatch?: MatchScore;
+  fixtures?: Fixture[];
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -14,7 +16,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onOpenPhoto,
   onShowToast,
   onOpenAdmin,
+  liveMatch,
+  fixtures,
 }) => {
+  const match = liveMatch || LIVE_MATCH;
+  const nextFixture = fixtures && fixtures.length > 0 ? fixtures[0] : null;
   const [reminderSet, setReminderSet] = useState(false);
   const [selectedNews, setSelectedNews] = useState<typeof NEWS_STORIES[0] | null>(null);
   const [showHighlights, setShowHighlights] = useState(false);
@@ -171,61 +177,63 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       <section className="px-4 mt-5">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#ba1a1a] animate-pulse" />
+            <span className={`w-2.5 h-2.5 rounded-full ${match.status === 'live' ? 'bg-[#ba1a1a] animate-pulse' : 'bg-emerald-600'}`} />
             <span className="text-sm font-bold text-[#131b2e] tracking-tight">
-              ম্যাচ ফলাফল ও লাইভ আপডেট
+              {match.status === 'live' ? 'লাইভ ম্যাচ স্কোর ও আপডেট' : 'ম্যাচ ফলাফল ও লাইভ আপডেট'}
             </span>
           </div>
-          <span className="text-xs text-[#005b34] font-bold">ফুটবল</span>
+          <span className="text-xs text-[#005b34] font-bold">{match.stage || 'ফুটবল'}</span>
         </div>
 
         <div className="bg-white rounded-xl p-3.5 shadow-sm border border-[#bec9bf]/20 overflow-hidden relative">
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#eaedff]">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#ffddb8] text-[#855300] text-[11px] font-bold">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#ffddb8] text-[#855300] text-[11px] font-bold truncate max-w-[220px]">
               <span className="material-symbols-outlined text-[14px]">trophy</span>
-              শিয়ালকোল গোল্ডকাপ ২০২৫ - ফাইনাল
+              <span className="truncate">{match.tournament}</span>
             </div>
-            <span className="text-[10px] text-[#3f4941] font-bold uppercase">ফুল টাইম (FT)</span>
+            <span className="text-[10px] text-[#3f4941] font-bold uppercase">
+              {match.status === 'live' ? (match.matchMinute || 'LIVE') : 'ফুল টাইম (FT)'}
+            </span>
           </div>
 
           {/* Teams & Scores */}
           <div className="grid grid-cols-7 items-center gap-2 py-1">
-            {/* Team 1: Shialkol */}
+            {/* Team 1: Home */}
             <div className="col-span-3 flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-white p-0.5 flex items-center justify-center mb-1 shadow-md ring-1 ring-[#005b34]/20 overflow-hidden">
                 <img
-                  alt="শিয়ালকোল একাদশ ক্রেস্ট"
+                  alt={match.homeTeam.name}
                   className="w-full h-full object-cover rounded-full"
                   src={CLUB_LOGO}
                 />
               </div>
               <span className="text-sm font-bold text-[#005b34] leading-tight line-clamp-1">
-                শিয়ালকোল
+                {match.homeTeam.name}
               </span>
-              <span className="text-[10px] text-[#3f4941]">হোম একাদশ</span>
+              <span className="text-[10px] text-[#3f4941]">হোম দল</span>
             </div>
 
             {/* Scoreboard Center */}
             <div className="col-span-1 flex flex-col items-center justify-center">
               <div className="flex items-center gap-1">
-                <span className="text-2xl font-black text-[#005b34] font-score">২</span>
+                <span className="text-2xl font-black text-[#005b34] font-score">{toBengaliDigits(match.homeTeam.score)}</span>
                 <span className="text-lg font-bold text-[#bec9bf]">-</span>
-                <span className="text-2xl font-black text-[#3f4941] font-score">১</span>
+                <span className="text-2xl font-black text-[#3f4941] font-score">{toBengaliDigits(match.awayTeam.score)}</span>
               </div>
               <span className="px-1.5 py-0.5 rounded bg-[#e2e7ff] text-[#3f4941] text-[9px] font-bold mt-0.5 whitespace-nowrap">
-                ৮৪' শেষ গোল
+                {match.matchMinute || 'চলমান'}
               </span>
             </div>
 
-            {/* Team 2: Kazipur */}
+            {/* Team 2: Away */}
             <div className="col-span-3 flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-[#eaedff] p-1 flex items-center justify-center mb-1 shadow-inner">
                 <div className="w-9 h-9 rounded-full bg-[#dae2fd] flex items-center justify-center text-[#005b34] font-bold text-xs">
-                  কেএস
+                  {match.awayTeam.badgeLetter || match.awayTeam.shortName?.slice(0, 2) || match.awayTeam.name?.slice(0, 2) || 'দল'}
                 </div>
               </div>
               <span className="text-sm font-bold text-[#131b2e] leading-tight line-clamp-1">
-                কাজিপুর স্পোর্টিং
+                {match.awayTeam.name}
               </span>
               <span className="text-[10px] text-[#3f4941]">অতিথি দল</span>
             </div>
@@ -233,20 +241,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
           {/* Match Key Event Strip */}
           <div className="mt-3 p-2 rounded-lg bg-[#eaedff] flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#fea619] flex items-center justify-center text-[#684000]">
                 <span className="material-symbols-outlined text-[16px]">sports_soccer</span>
               </span>
               <p className="text-xs text-[#131b2e] truncate">
-                <strong className="font-bold text-[#005b34]">৮৪' মিনিটে গোল!</strong> সাকিব হোসেন (শিয়ালকোল)
+                {match.highlightEvent || 'ম্যাচ চলমান • মাঠে টানটান উত্তেজনা!'}
               </p>
             </div>
-            <button
-              onClick={() => setShowHighlights(true)}
-              className="flex-shrink-0 text-xs font-bold text-[#005b34] px-2 py-1 rounded hover:bg-white active:scale-95 transition-all"
-            >
-              হাইলাইটস
-            </button>
+            {onOpenAdmin && (
+              <button
+                onClick={onOpenAdmin}
+                className="flex-shrink-0 text-xs font-bold text-[#005b34] px-2 py-1 rounded hover:bg-white active:scale-95 transition-all flex items-center gap-0.5"
+                title="লাইভ স্কোর ও হাইলাইটস এডিট করুন"
+              >
+                <span className="material-symbols-outlined text-[14px]">edit</span>
+                <span>এডিট</span>
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -259,50 +271,58 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onClick={() => onNavigateTab('tournaments')}
             className="text-xs text-[#005b34] font-bold flex items-center hover:underline"
           >
-            সকল ফিক্সচার <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+            সকল ফিক্সচার {fixtures && `(${toBengaliDigits(fixtures.length)}টি)`} <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           </button>
         </div>
 
-        <div className="bg-[#f2f3ff] rounded-xl p-3.5 shadow-sm border border-[#bec9bf]/20 relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[#855300] text-[20px]">sports_cricket</span>
-              <span className="text-xs font-bold text-[#855300]">আন্তঃইউনিয়ন ক্রিকেট ২০২৫</span>
-            </div>
-            <span className="px-2 py-0.5 rounded-full bg-[#005b34]/10 text-[#005b34] text-[10px] font-bold">
-              টি-২০ টুর্নামেন্ট
-            </span>
-          </div>
-
-          <div className="mt-2.5 flex items-center justify-between bg-white p-3 rounded-lg border border-[#bec9bf]/10">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              <div className="w-10 h-10 rounded-lg bg-[#005b34]/10 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-[#005b34] text-[22px]">event</span>
+        {nextFixture ? (
+          <div className="bg-[#f2f3ff] rounded-xl p-3.5 shadow-sm border border-[#bec9bf]/20 relative overflow-hidden">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[#855300] text-[20px]">sports_cricket</span>
+                <span className="text-xs font-bold text-[#855300]">{nextFixture.title}</span>
               </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-[#131b2e] truncate">১৫ নভেম্বর, ২০২৫</p>
-                <p className="text-[11px] text-[#3f4941] flex items-center gap-1 truncate mt-0.5">
-                  <span className="material-symbols-outlined text-[13px] text-[#005b34]">location_on</span>
-                  শিয়ালকোল হাই স্কুল মাঠ
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={toggleReminder}
-              className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1 ${
-                reminderSet
-                  ? 'bg-[#9cf6bc] text-[#002110]'
-                  : 'bg-[#005b34] text-white hover:bg-[#137547]'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[16px]">
-                {reminderSet ? 'check_circle' : 'notifications_active'}
+              <span className="px-2 py-0.5 rounded-full bg-[#005b34]/10 text-[#005b34] text-[10px] font-bold">
+                {nextFixture.tournamentType || 'টুর্নামেন্ট'}
               </span>
-              <span>{reminderSet ? 'যুক্ত আছে' : 'রিমাইন্ডার'}</span>
-            </button>
+            </div>
+
+            <div className="mt-2.5 flex items-center justify-between bg-white p-3 rounded-lg border border-[#bec9bf]/10">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <div className="w-10 h-10 rounded-lg bg-[#005b34]/10 flex items-center justify-center flex-shrink-0">
+                  <span className="material-symbols-outlined text-[#005b34] text-[22px]">event</span>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-[#131b2e] truncate">
+                    {nextFixture.team1?.name} বনাম {nextFixture.team2?.name}
+                  </p>
+                  <p className="text-[11px] text-[#3f4941] flex items-center gap-1 truncate mt-0.5">
+                    <span className="material-symbols-outlined text-[13px] text-[#005b34]">calendar_today</span>
+                    {nextFixture.date} • {nextFixture.time} ({nextFixture.venue})
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={toggleReminder}
+                className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1 ${
+                  reminderSet
+                    ? 'bg-[#9cf6bc] text-[#002110]'
+                    : 'bg-[#005b34] text-white hover:bg-[#137547]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">
+                  {reminderSet ? 'check_circle' : 'notifications_active'}
+                </span>
+                <span>{reminderSet ? 'যুক্ত আছে' : 'রিমাইন্ডার'}</span>
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-[#f2f3ff] rounded-xl p-3 text-center text-xs text-[#3f4941]">
+            বর্তমানে কোনো ফিক্সচার তালিকাভুক্ত নেই। অ্যাডমিন প্যানেল থেকে নতুন ফিক্সচার যুক্ত করা যাবে।
+          </div>
+        )}
       </section>
 
       {/* 5. LATEST CLUB NEWS & ANNOUNCEMENTS */}

@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CLUB_LOGO, DEFAULT_ADMIN_ACCOUNTS, toBengaliDigits } from '../data/mockData';
-import { MatchScore, ClubNotice, MembershipApplication, TeamRegistration, AdminProfile } from '../types';
+import { MatchScore, ClubNotice, MembershipApplication, TeamRegistration, AdminProfile, Fixture } from '../types';
 
 interface AdminPanelProps {
   isOpen: boolean;
   onClose: () => void;
   liveMatch: MatchScore;
   onUpdateLiveMatch: (updatedMatch: MatchScore) => void;
+  fixtures: Fixture[];
+  onAddFixture: (fixture: Fixture) => void;
+  onUpdateFixture: (fixture: Fixture) => void;
+  onDeleteFixture: (id: string) => void;
   notices: ClubNotice[];
   onAddNotice: (notice: ClubNotice) => void;
+  onDeleteNotice?: (id: string) => void;
   membershipApplications: MembershipApplication[];
   onUpdateApplicationStatus: (id: string, status: 'approved' | 'rejected') => void;
   teamRegistrations: TeamRegistration[];
@@ -21,8 +26,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onClose,
   liveMatch,
   onUpdateLiveMatch,
+  fixtures,
+  onAddFixture,
+  onUpdateFixture,
+  onDeleteFixture,
   notices,
   onAddNotice,
+  onDeleteNotice,
   membershipApplications,
   onUpdateApplicationStatus,
   teamRegistrations,
@@ -69,15 +79,53 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [rememberMe, setRememberMe] = useState(true);
 
   // Tabs state
-  const [adminTab, setAdminTab] = useState<'score' | 'members' | 'teams' | 'notices' | 'profile'>('score');
+  const [adminTab, setAdminTab] = useState<'score' | 'fixtures' | 'members' | 'teams' | 'notices' | 'profile'>('score');
 
   // Match edit state
+  const [tournamentName, setTournamentName] = useState(liveMatch.tournament);
+  const [matchStage, setMatchStage] = useState(liveMatch.stage || 'ফাইনাল');
+  const [homeTeamName, setHomeTeamName] = useState(liveMatch.homeTeam.name);
+  const [awayTeamName, setAwayTeamName] = useState(liveMatch.awayTeam.name);
   const [homeScore, setHomeScore] = useState(liveMatch.homeTeam.score);
   const [awayScore, setAwayScore] = useState(liveMatch.awayTeam.score);
-  const [matchMinute, setMatchMinute] = useState(liveMatch.matchMinute || '৬৭:১২"');
-  const [matchStatus, setMatchStatus] = useState<'live' | 'completed'>(liveMatch.status === 'completed' ? 'completed' : 'live');
-  const [goalScorer, setGoalScorer] = useState('রাকিবুল হাসান (৩৪\' মিনিট - হেডার)');
+  const [matchMinute, setMatchMinute] = useState(liveMatch.matchMinute || '৭৫:১২"');
+  const [matchStatus, setMatchStatus] = useState<'live' | 'completed' | 'upcoming'>(liveMatch.status);
+  const [goalScorer, setGoalScorer] = useState(liveMatch.highlightEvent || 'রাকিবুল হাসান (৩৪\' মিনিট - হেডার)');
+  const [venue, setVenue] = useState(liveMatch.venue || 'শিয়ালকোল সেন্ট্রাল হাই স্কুল মাঠ');
+  const [liveCommentary, setLiveCommentary] = useState(liveMatch.liveCommentary || '');
   const [possessionHome, setPossessionHome] = useState(liveMatch.stats?.possessionHome || 56);
+
+  // Sync with incoming liveMatch from Firestore
+  useEffect(() => {
+    setTournamentName(liveMatch.tournament);
+    setMatchStage(liveMatch.stage || 'ফাইনাল');
+    setHomeTeamName(liveMatch.homeTeam.name);
+    setAwayTeamName(liveMatch.awayTeam.name);
+    setHomeScore(liveMatch.homeTeam.score);
+    setAwayScore(liveMatch.awayTeam.score);
+    setMatchMinute(liveMatch.matchMinute || '৭৫:১২"');
+    setMatchStatus(liveMatch.status);
+    setGoalScorer(liveMatch.highlightEvent || '');
+    setVenue(liveMatch.venue || 'শিয়ালকোল সেন্ট্রাল হাই স্কুল মাঠ');
+    setLiveCommentary(liveMatch.liveCommentary || '');
+    setPossessionHome(liveMatch.stats?.possessionHome || 56);
+  }, [liveMatch]);
+
+  // Fixture Edit State
+  const [editingFixture, setEditingFixture] = useState<Fixture | null>(null);
+  const [fixTitle, setFixTitle] = useState('');
+  const [fixTournamentType, setFixTournamentType] = useState('ফুটবল টুর্নামেন্ট');
+  const [fixMatchNo, setFixMatchNo] = useState('');
+  const [fixTeam1Name, setFixTeam1Name] = useState('');
+  const [fixTeam1Captain, setFixTeam1Captain] = useState('');
+  const [fixTeam2Name, setFixTeam2Name] = useState('');
+  const [fixTeam2Captain, setFixTeam2Captain] = useState('');
+  const [fixDate, setFixDate] = useState('');
+  const [fixTime, setFixTime] = useState('');
+  const [fixVenue, setFixVenue] = useState('শিয়ালকোল হাই স্কুল মাঠ');
+  const [fixRegOpen, setFixRegOpen] = useState(false);
+  const [fixDeadline, setFixDeadline] = useState('');
+  const [fixPrize, setFixPrize] = useState('');
 
   // New notice state
   const [newNoticeTitle, setNewNoticeTitle] = useState('');
@@ -204,20 +252,29 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     onShowToast('নিরাপত্তা পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে! 🔒');
   };
 
-  // Save Match Score
+  // Save Match Score & Details to Database
   const handleSaveMatch = (e: React.FormEvent) => {
     e.preventDefault();
     const updated: MatchScore = {
       ...liveMatch,
+      tournament: tournamentName.trim() || 'শিয়ালকোল গোল্ডকাপ ২০২৬',
+      stage: matchStage.trim() || 'ফাইনাল',
       status: matchStatus,
-      matchMinute: matchMinute,
-      highlightEvent: goalScorer,
+      matchMinute: matchMinute.trim() || '৭৫:০০"',
+      venue: venue.trim() || 'শিয়ালকোল সেন্ট্রাল হাই স্কুল মাঠ',
+      highlightEvent: goalScorer.trim(),
+      liveCommentary: liveCommentary.trim(),
       homeTeam: {
         ...liveMatch.homeTeam,
+        name: homeTeamName.trim() || 'শিয়ালকোল একাদশ',
+        shortName: homeTeamName.trim().slice(0, 10),
         score: homeScore,
       },
       awayTeam: {
         ...liveMatch.awayTeam,
+        name: awayTeamName.trim() || 'অতিথি দল',
+        shortName: awayTeamName.trim().slice(0, 10),
+        badgeLetter: awayTeamName.trim().slice(0, 2) || 'দল',
         score: awayScore,
       },
       stats: {
@@ -229,7 +286,82 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       },
     };
     onUpdateLiveMatch(updated);
-    onShowToast('লাইভ ম্যাচ স্কোর ও তথ্য সফলভাবে আপডেট হয়েছে!');
+    onShowToast('লাইভ ম্যাচ স্কোর ও দলের তথ্য ডাটাবেসে সফলভাবে আপডেট হয়েছে! ⚽');
+  };
+
+  // Fixture Handlers
+  const handleStartEditFixture = (fix: Fixture) => {
+    setEditingFixture(fix);
+    setFixTitle(fix.title);
+    setFixTournamentType(fix.tournamentType || 'ফুটবল টুর্নামেন্ট');
+    setFixMatchNo(fix.matchNo || '');
+    setFixTeam1Name(fix.team1?.name || '');
+    setFixTeam1Captain(fix.team1?.captain || '');
+    setFixTeam2Name(fix.team2?.name || '');
+    setFixTeam2Captain(fix.team2?.captain || '');
+    setFixDate(fix.date);
+    setFixTime(fix.time);
+    setFixVenue(fix.venue || 'শিয়ালকোল হাই স্কুল মাঠ');
+    setFixRegOpen(Boolean(fix.isRegistrationOpen));
+    setFixDeadline(fix.registrationDeadline || '');
+    setFixPrize(fix.prizeMoney || '');
+    setAdminTab('fixtures');
+  };
+
+  const handleCancelEditFixture = () => {
+    setEditingFixture(null);
+    setFixTitle('');
+    setFixMatchNo('');
+    setFixTeam1Name('');
+    setFixTeam1Captain('');
+    setFixTeam2Name('');
+    setFixTeam2Captain('');
+    setFixDate('');
+    setFixTime('');
+    setFixDeadline('');
+    setFixPrize('');
+    setFixRegOpen(false);
+  };
+
+  const handleSaveFixture = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fixTitle.trim() || !fixTeam1Name.trim() || !fixTeam2Name.trim()) {
+      onShowToast('দয়া করে টুর্নামেন্টের শিরোনাম এবং উভয় দলের নাম দিন!');
+      return;
+    }
+
+    const fixtureObj: Fixture = {
+      id: editingFixture ? editingFixture.id : `fixture-${Date.now()}`,
+      title: fixTitle.trim(),
+      tournamentType: fixTournamentType.trim(),
+      matchNo: fixMatchNo.trim() || undefined,
+      team1: {
+        name: fixTeam1Name.trim(),
+        captain: fixTeam1Captain.trim(),
+        badge: fixTeam1Name.trim().slice(0, 2),
+      },
+      team2: {
+        name: fixTeam2Name.trim(),
+        captain: fixTeam2Captain.trim(),
+        badge: fixTeam2Name.trim().slice(0, 2),
+      },
+      date: fixDate.trim() || '২০২৬',
+      time: fixTime.trim() || 'বিকাল ৩:০০',
+      venue: fixVenue.trim() || 'শিয়ালকোল হাই স্কুল মাঠ',
+      isRegistrationOpen: fixRegOpen,
+      registrationDeadline: fixDeadline.trim() || undefined,
+      prizeMoney: fixPrize.trim() || undefined,
+    };
+
+    if (editingFixture) {
+      onUpdateFixture(fixtureObj);
+      onShowToast('ফিক্সচার ডাটাবেসে সফলভাবে আপডেট হয়েছে! 📅');
+    } else {
+      onAddFixture(fixtureObj);
+      onShowToast('নতুন ফিক্সচার ডাটাবেসে সফলভাবে যুক্ত হয়েছে! 📅');
+    }
+
+    handleCancelEditFixture();
   };
 
   // Publish Notice
@@ -576,6 +708,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </button>
 
               <button
+                onClick={() => setAdminTab('fixtures')}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                  adminTab === 'fixtures' ? 'bg-[#005b34] text-white shadow-sm' : 'text-[#3f4941] hover:bg-white/50'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">calendar_month</span>
+                <span>ফিক্সচার ({toBengaliDigits(fixtures?.length || 0)})</span>
+              </button>
+
+              <button
                 onClick={() => setAdminTab('members')}
                 className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 relative ${
                   adminTab === 'members' ? 'bg-[#005b34] text-white shadow-sm' : 'text-[#3f4941] hover:bg-white/50'
@@ -629,15 +771,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {/* Tab Content */}
             <div className="p-4 flex-1 overflow-y-auto no-scrollbar space-y-4">
               {/* ======================================================== */}
-              {/* TAB 1: LIVE SCORE CONTROLLER                             */}
+              {/* TAB 1: LIVE SCORE & MATCH CONTROLLER                     */}
               {/* ======================================================== */}
               {adminTab === 'score' && (
                 <form onSubmit={handleSaveMatch} className="space-y-4">
                   <div className="bg-white p-3.5 rounded-xl border border-[#bec9bf]/20 shadow-sm space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                       <h4 className="text-xs font-bold text-[#005b34] uppercase tracking-wider flex items-center gap-1">
                         <span className="material-symbols-outlined text-[16px]">scoreboard</span>
-                        ম্যাচ স্কোর পরিচালনা (শিয়ালকোল গোল্ডকাপ)
+                        লাইভ ম্যাচ স্কোর ও দল পরিচালনা
                       </h4>
                       <select
                         value={matchStatus}
@@ -646,15 +788,49 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       >
                         <option value="live">চলমান (LIVE)</option>
                         <option value="completed">সমাপ্ত (FT)</option>
+                        <option value="upcoming">আসন্ন (Upcoming)</option>
                       </select>
                     </div>
 
-                    {/* Score Modifier Row */}
+                    {/* Tournament & Stage */}
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#3f4941] mb-1">টুর্নামেন্টের নাম</label>
+                        <input
+                          type="text"
+                          required
+                          value={tournamentName}
+                          onChange={(e) => setTournamentName(e.target.value)}
+                          placeholder="উদা: শিয়ালকোল গোল্ডকাপ ২০২৬"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20 font-medium"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#3f4941] mb-1">ম্যাচের পর্ব / পর্যায়</label>
+                        <input
+                          type="text"
+                          value={matchStage}
+                          onChange={(e) => setMatchStage(e.target.value)}
+                          placeholder="উদা: ফাইনাল, সেমিফাইনাল ২"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20 font-medium"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Team Names and Scores Row */}
                     <div className="grid grid-cols-2 gap-3 pt-1">
-                      {/* Home Score */}
-                      <div className="bg-[#f2f3ff] p-3 rounded-lg text-center flex flex-col items-center">
-                        <span className="text-xs font-bold text-[#005b34]">শিয়ালকোল ইয়ুথ (হোম)</span>
-                        <div className="flex items-center gap-3 my-2">
+                      {/* Home Team */}
+                      <div className="bg-[#f2f3ff] p-3 rounded-lg text-center flex flex-col items-center border border-emerald-200">
+                        <label className="block text-[10px] font-bold text-[#005b34] mb-1 self-start">হোম দল (Team 1):</label>
+                        <input
+                          type="text"
+                          required
+                          value={homeTeamName}
+                          onChange={(e) => setHomeTeamName(e.target.value)}
+                          placeholder="হোম দলের নাম"
+                          className="text-xs font-bold text-[#005b34] bg-white px-2 py-1.5 rounded-lg border border-slate-300 text-center w-full shadow-xs"
+                        />
+                        <div className="flex items-center gap-2.5 my-2.5">
                           <button
                             type="button"
                             onClick={() => setHomeScore(Math.max(0, homeScore - 1))}
@@ -662,7 +838,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           >
                             -
                           </button>
-                          <span className="text-3xl font-black text-[#005b34] font-score">{homeScore}</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value={homeScore}
+                            onChange={(e) => setHomeScore(Math.max(0, parseInt(e.target.value, 10) || 0))}
+                            className="text-3xl font-black text-[#005b34] font-score w-14 text-center bg-transparent outline-none"
+                          />
                           <button
                             type="button"
                             onClick={() => setHomeScore(homeScore + 1)}
@@ -673,10 +855,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         </div>
                       </div>
 
-                      {/* Away Score */}
-                      <div className="bg-[#f2f3ff] p-3 rounded-lg text-center flex flex-col items-center">
-                        <span className="text-xs font-bold text-[#855300]">সলঙ্গা রাইডার্স (অতিথি)</span>
-                        <div className="flex items-center gap-3 my-2">
+                      {/* Away Team */}
+                      <div className="bg-[#f2f3ff] p-3 rounded-lg text-center flex flex-col items-center border border-amber-200">
+                        <label className="block text-[10px] font-bold text-[#855300] mb-1 self-start">অতিথি দল (Team 2):</label>
+                        <input
+                          type="text"
+                          required
+                          value={awayTeamName}
+                          onChange={(e) => setAwayTeamName(e.target.value)}
+                          placeholder="অতিথি দলের নাম"
+                          className="text-xs font-bold text-[#855300] bg-white px-2 py-1.5 rounded-lg border border-slate-300 text-center w-full shadow-xs"
+                        />
+                        <div className="flex items-center gap-2.5 my-2.5">
                           <button
                             type="button"
                             onClick={() => setAwayScore(Math.max(0, awayScore - 1))}
@@ -684,7 +874,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           >
                             -
                           </button>
-                          <span className="text-3xl font-black text-[#855300] font-score">{awayScore}</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value={awayScore}
+                            onChange={(e) => setAwayScore(Math.max(0, parseInt(e.target.value, 10) || 0))}
+                            className="text-3xl font-black text-[#855300] font-score w-14 text-center bg-transparent outline-none"
+                          />
                           <button
                             type="button"
                             onClick={() => setAwayScore(awayScore + 1)}
@@ -696,7 +892,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       </div>
                     </div>
 
-                    {/* Match Time & Possession */}
+                    {/* Match Time & Venue */}
                     <div className="grid grid-cols-2 gap-2.5 pt-1">
                       <div>
                         <label className="block text-[11px] font-bold text-[#3f4941] mb-1">ম্যাচ মিনিট</label>
@@ -704,35 +900,46 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           type="text"
                           value={matchMinute}
                           onChange={(e) => setMatchMinute(e.target.value)}
-                          placeholder="উদা: ৭৫:০০"
+                          placeholder={'উদা: ৭৫:১২"'}
                           className="w-full px-2.5 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-[#3f4941] mb-1">
-                          হোম বল পজেশন ({possessionHome}%)
-                        </label>
+                        <label className="block text-[11px] font-bold text-[#3f4941] mb-1">খেলার ভেন্যু / মাঠ</label>
                         <input
-                          type="range"
-                          min="20"
-                          max="80"
-                          value={possessionHome}
-                          onChange={(e) => setPossessionHome(parseInt(e.target.value, 10))}
-                          className="w-full accent-[#005b34]"
+                          type="text"
+                          value={venue}
+                          onChange={(e) => setVenue(e.target.value)}
+                          placeholder="উদা: শিয়ালকোল হাই স্কুল মাঠ"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20"
                         />
                       </div>
                     </div>
 
-                    {/* Goal Scorer & Event */}
+                    {/* Goal Scorer & Event Highlights */}
                     <div>
                       <label className="block text-[11px] font-bold text-[#3f4941] mb-1">
-                        সর্বশেষ গোল বা ইভেন্ট হাইলাইট
+                        সর্বশেষ গোল বা ইভেন্ট হাইলাইটস
                       </label>
                       <input
                         type="text"
                         value={goalScorer}
                         onChange={(e) => setGoalScorer(e.target.value)}
-                        placeholder="উদা: তানভীর আহমেদ (৬২' মিনিট - ফ্রি কিক)"
+                        placeholder="উদা: রাকিবুল হাসান (৩৪' মিনিট - হেডার)"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20"
+                      />
+                    </div>
+
+                    {/* Live Commentary */}
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#3f4941] mb-1">
+                        লাইভ ধারাভাষ্য / কমেন্ট্রি আপডেট
+                      </label>
+                      <input
+                        type="text"
+                        value={liveCommentary}
+                        onChange={(e) => setLiveCommentary(e.target.value)}
+                        placeholder="উদা: সলঙ্গার কর্নার শট সেভ করলেন গোলরক্ষক... টানটান উত্তেজনা!"
                         className="w-full px-2.5 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20"
                       />
                     </div>
@@ -742,10 +949,223 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     type="submit"
                     className="w-full py-2.5 bg-[#005b34] hover:bg-[#137547] text-white font-bold text-xs sm:text-sm rounded-lg shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5"
                   >
-                    <span className="material-symbols-outlined text-[18px]">save</span>
-                    <span>লাইভ আপডেট প্রকাশ করুন</span>
+                    <span className="material-symbols-outlined text-[18px]">cloud_sync</span>
+                    <span>ডাটাবেসে লাইভ ম্যাচ আপডেট করুন</span>
                   </button>
                 </form>
+              )}
+
+              {/* ======================================================== */}
+              {/* TAB 2: FIXTURES MANAGEMENT (NEW)                         */}
+              {/* ======================================================== */}
+              {adminTab === 'fixtures' && (
+                <div className="space-y-4">
+                  {/* Fixture Create / Edit Form */}
+                  <form onSubmit={handleSaveFixture} className="bg-white p-3.5 rounded-xl border border-[#bec9bf]/20 shadow-sm space-y-3">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                      <h4 className="text-xs font-bold text-[#005b34] uppercase tracking-wider flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[16px]">edit_calendar</span>
+                        {editingFixture ? 'ফিক্সচার সম্পাদনা করুন' : 'নতুন ফিক্সচার যোগ করুন'}
+                      </h4>
+                      {editingFixture && (
+                        <button
+                          type="button"
+                          onClick={handleCancelEditFixture}
+                          className="text-[11px] text-red-600 hover:underline font-bold"
+                        >
+                          বাতিল
+                        </button>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#3f4941] mb-1">টুর্নামেন্টের শিরোনাম *</label>
+                      <input
+                        type="text"
+                        required
+                        value={fixTitle}
+                        onChange={(e) => setFixTitle(e.target.value)}
+                        placeholder="উদা: শিয়ালকোল ক্রিকেট সুপার লিগ ২০২৬"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#3f4941] mb-1">টুর্নামেন্ট ক্যাটাগরি</label>
+                        <select
+                          value={fixTournamentType}
+                          onChange={(e) => setFixTournamentType(e.target.value)}
+                          className="w-full px-2 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20"
+                        >
+                          <option value="ফুটবল টুর্নামেন্ট">ফুটবল টুর্নামেন্ট</option>
+                          <option value="টি-২০ ক্রিকেট">টি-২০ ক্রিকেট</option>
+                          <option value="ব্যাডমিন্টন টুর্নামেন্ট">ব্যাডমিন্টন টুর্নামেন্ট</option>
+                          <option value="ভলিবল প্রতিযোগিতা">ভলিবল প্রতিযোগিতা</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#3f4941] mb-1">ম্যাচ নম্বর (ঐচ্ছিক)</label>
+                        <input
+                          type="text"
+                          value={fixMatchNo}
+                          onChange={(e) => setFixMatchNo(e.target.value)}
+                          placeholder="উদা: ম্যাচ #০৫"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <label className="block text-[10px] font-bold text-[#005b34] mb-1">দল ১ এর নাম *</label>
+                        <input
+                          type="text"
+                          required
+                          value={fixTeam1Name}
+                          onChange={(e) => setFixTeam1Name(e.target.value)}
+                          placeholder="উদা: শিয়ালকোল টাইটানস"
+                          className="w-full px-2 py-1 rounded bg-white text-xs outline-none border border-slate-300"
+                        />
+                        <label className="block text-[10px] text-slate-500 mt-1 mb-0.5">অধিনায়ক (ঐচ্ছিক)</label>
+                        <input
+                          type="text"
+                          value={fixTeam1Captain}
+                          onChange={(e) => setFixTeam1Captain(e.target.value)}
+                          placeholder="অধিনায়কের নাম"
+                          className="w-full px-2 py-1 rounded bg-white text-[11px] outline-none border border-slate-300"
+                        />
+                      </div>
+
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <label className="block text-[10px] font-bold text-[#855300] mb-1">দল ২ এর নাম *</label>
+                        <input
+                          type="text"
+                          required
+                          value={fixTeam2Name}
+                          onChange={(e) => setFixTeam2Name(e.target.value)}
+                          placeholder="উদা: রতনকান্দি কিংস"
+                          className="w-full px-2 py-1 rounded bg-white text-xs outline-none border border-slate-300"
+                        />
+                        <label className="block text-[10px] text-slate-500 mt-1 mb-0.5">অধিনায়ক (ঐচ্ছিক)</label>
+                        <input
+                          type="text"
+                          value={fixTeam2Captain}
+                          onChange={(e) => setFixTeam2Captain(e.target.value)}
+                          placeholder="অধিনায়কের নাম"
+                          className="w-full px-2 py-1 rounded bg-white text-[11px] outline-none border border-slate-300"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#3f4941] mb-1">তারিখ</label>
+                        <input
+                          type="text"
+                          value={fixDate}
+                          onChange={(e) => setFixDate(e.target.value)}
+                          placeholder="উদা: ২৫ নভেম্বর ২০২৬"
+                          className="w-full px-2 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#3f4941] mb-1">সময়</label>
+                        <input
+                          type="text"
+                          value={fixTime}
+                          onChange={(e) => setFixTime(e.target.value)}
+                          placeholder="বিকাল ৩:০০"
+                          className="w-full px-2 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#3f4941] mb-1">ভেন্যু</label>
+                        <input
+                          type="text"
+                          value={fixVenue}
+                          onChange={(e) => setFixVenue(e.target.value)}
+                          placeholder="মাঠের নাম"
+                          className="w-full px-2 py-1.5 rounded-lg bg-[#f2f3ff] text-xs outline-none border border-[#bec9bf]/20"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <input
+                        type="checkbox"
+                        id="fixRegCheck"
+                        checked={fixRegOpen}
+                        onChange={(e) => setFixRegOpen(e.target.checked)}
+                        className="rounded text-[#005b34] focus:ring-[#005b34]"
+                      />
+                      <label htmlFor="fixRegCheck" className="text-xs font-bold text-slate-700 cursor-pointer">
+                        অনলাইন দল নিবন্ধন (Team Registration) চালু রাখুন
+                      </label>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-2 bg-[#005b34] hover:bg-[#137547] text-white font-bold text-xs rounded-lg shadow-sm flex items-center justify-center gap-1.5"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">save</span>
+                      <span>{editingFixture ? 'ফিক্সচার আপডেট করুন' : 'ডাটাবেসে ফিক্সচার সংরক্ষণ করুন'}</span>
+                    </button>
+                  </form>
+
+                  {/* Existing Fixtures List */}
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-bold text-[#005b34] uppercase tracking-wider">
+                      ডাটাবেস ফিক্সচার তালিকা ({toBengaliDigits(fixtures?.length || 0)}টি)
+                    </h4>
+                    {fixtures && fixtures.length > 0 ? (
+                      fixtures.map((fix) => (
+                        <div
+                          key={fix.id}
+                          className="bg-white p-3 rounded-xl border border-[#bec9bf]/20 shadow-xs flex items-center justify-between gap-2"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <span className="text-[10px] text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded font-bold">
+                              {fix.tournamentType || fix.title}
+                            </span>
+                            <h5 className="text-xs font-bold text-[#131b2e] truncate mt-0.5">
+                              {fix.team1?.name} বনাম {fix.team2?.name}
+                            </h5>
+                            <span className="text-[10px] text-slate-500 block truncate">
+                              {fix.date} • {fix.time} ({fix.venue})
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => handleStartEditFixture(fix)}
+                              className="px-2.5 py-1 rounded bg-[#005b34]/10 hover:bg-[#005b34] text-[#005b34] hover:text-white text-[11px] font-bold transition-colors flex items-center gap-0.5"
+                            >
+                              <span className="material-symbols-outlined text-[13px]">edit</span>
+                              <span>এডিট</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (confirm(`"${fix.team1?.name} বনাম ${fix.team2?.name}" ফিক্সচারটি মুছে ফেলতে চান?`)) {
+                                  onDeleteFixture(fix.id);
+                                }
+                              }}
+                              className="p-1 rounded text-red-600 hover:bg-red-50 transition-colors"
+                              title="মুছুন"
+                            >
+                              <span className="material-symbols-outlined text-[16px]">delete</span>
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="bg-white p-4 rounded-xl text-center text-xs text-slate-500">
+                        কোনো ফিক্সচার পাওয়া যায়নি। উপরের ফর্ম দিয়ে যুক্ত করুন।
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
 
               {/* ======================================================== */}
@@ -966,9 +1386,27 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <div className="space-y-2">
                     <h5 className="text-[11px] font-bold text-[#3f4941] uppercase">বর্তমানে সক্রিয় নোটিশসমূহ</h5>
                     {notices.map((n) => (
-                      <div key={n.id} className="p-2.5 rounded-lg bg-white border border-[#bec9bf]/20 text-xs flex justify-between items-center">
-                        <span className="font-semibold text-[#131b2e] truncate max-w-[280px]">{n.title}</span>
-                        <span className="text-[10px] text-[#005b34] font-bold px-1.5 py-0.5 rounded bg-[#9cf6bc]/30">{n.category}</span>
+                      <div key={n.id} className="p-2.5 rounded-lg bg-white border border-[#bec9bf]/20 text-xs flex justify-between items-center gap-2">
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-semibold text-[#131b2e] truncate">{n.title}</span>
+                          <span className="text-[10px] text-[#3f4941]">{n.date}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <span className="text-[10px] text-[#005b34] font-bold px-1.5 py-0.5 rounded bg-[#9cf6bc]/30">{n.category}</span>
+                          {onDeleteNotice && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onDeleteNotice(n.id);
+                                onShowToast('নোটিশ মুছে ফেলা হয়েছে');
+                              }}
+                              className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded transition-colors"
+                              title="নোটিশ মুছুন"
+                            >
+                              <span className="material-symbols-outlined text-[16px]">delete</span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net: default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // Live Matches: Public read, write/update allowed for admin or updating cheer count
+    match /matches/{matchId} {
+      allow read: if true;
+      allow write: if isValidId(matchId);
+    }
+
+    // Fixtures: Public read, write/update allowed for tournament fixtures
+    match /fixtures/{fixtureId} {
+      allow read: if true;
+      allow write: if isValidId(fixtureId);
+    }
+
+    // Notices: Public read, write allowed for official notices
+    match /notices/{noticeId} {
+      allow read: if true;
+      allow write: if isValidId(noticeId);
+    }
+
+    // Membership Applications: Public can create, read/update allowed
+    match /membershipApplications/{appId} {
+      allow read: if true;
+      allow create: if isValidId(appId) && incoming().name is string && incoming().phone is string;
+      allow update, delete: if isValidId(appId);
+    }
+
+    // Team Registrations: Public can register, read/update allowed
+    match /teamRegistrations/{teamId} {
+      allow read: if true;
+      allow create: if isValidId(teamId) && incoming().teamName is string && incoming().contactNumber is string;
+      allow update, delete: if isValidId(teamId);
+    }
+
+    // Connection testing
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+  }
+}

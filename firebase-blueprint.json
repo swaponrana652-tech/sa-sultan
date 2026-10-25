@@ -1,0 +1,118 @@
+{
+  "entities": {
+    "LiveMatch": {
+      "title": "LiveMatch",
+      "description": "Real-time match data including team names, score, minute, status, and highlights",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tournament": { "type": "string" },
+        "stage": { "type": "string" },
+        "status": { "type": "string", "enum": ["live", "upcoming", "completed"] },
+        "matchMinute": { "type": "string" },
+        "homeTeam": { "type": "object" },
+        "awayTeam": { "type": "object" },
+        "venue": { "type": "string" },
+        "spectators": { "type": "string" },
+        "highlightEvent": { "type": "string" },
+        "stats": { "type": "object" },
+        "liveCommentary": { "type": "string" },
+        "cheerCount": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "tournament", "status", "homeTeam", "awayTeam"]
+    },
+    "Fixture": {
+      "title": "Fixture",
+      "description": "Upcoming club tournament fixture and schedule",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "matchNo": { "type": "string" },
+        "tournamentType": { "type": "string" },
+        "team1": { "type": "object" },
+        "team2": { "type": "object" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "venue": { "type": "string" },
+        "isRegistrationOpen": { "type": "boolean" },
+        "registrationDeadline": { "type": "string" },
+        "teamsCount": { "type": "string" },
+        "prizeMoney": { "type": "string" },
+        "image": { "type": "string" }
+      },
+      "required": ["id", "title", "team1", "team2", "date", "time", "venue"]
+    },
+    "Notice": {
+      "title": "Notice",
+      "description": "Club notices and circulars",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "fileSize": { "type": "string" },
+        "downloadUrl": { "type": "string" },
+        "image": { "type": "string" }
+      },
+      "required": ["id", "title", "date", "category", "description"]
+    },
+    "MembershipApplication": {
+      "title": "MembershipApplication",
+      "description": "Public member registrations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "sport": { "type": "string" },
+        "bloodGroup": { "type": "string" },
+        "membershipType": { "type": "string" },
+        "date": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] }
+      },
+      "required": ["id", "name", "phone", "sport", "status"]
+    },
+    "TeamRegistration": {
+      "title": "TeamRegistration",
+      "description": "Tournament team entry applications",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "teamName": { "type": "string" },
+        "tournament": { "type": "string" },
+        "managerName": { "type": "string" },
+        "contactNumber": { "type": "string" },
+        "playerCount": { "type": "string" },
+        "date": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved"] }
+      },
+      "required": ["id", "teamName", "tournament", "managerName", "contactNumber", "status"]
+    }
+  },
+  "firestore": {
+    "/matches/{matchId}": {
+      "schema": "LiveMatch",
+      "description": "Collection of match documents including real-time live matches and scores"
+    },
+    "/fixtures/{fixtureId}": {
+      "schema": "Fixture",
+      "description": "Upcoming fixtures scheduled for club tournaments"
+    },
+    "/notices/{noticeId}": {
+      "schema": "Notice",
+      "description": "Official club circulars, announcements, and notices"
+    },
+    "/membershipApplications/{appId}": {
+      "schema": "MembershipApplication",
+      "description": "Submissions for club membership applications"
+    },
+    "/teamRegistrations/{teamId}": {
+      "schema": "TeamRegistration",
+      "description": "Tournament team entry registrations"
+    }
+  }
+}

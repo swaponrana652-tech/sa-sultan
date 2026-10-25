@@ -1,19 +1,24 @@
 import React, { useState, useRef } from 'react';
 import { LIVE_MATCH, STANDINGS, FIXTURES, toBengaliDigits } from '../data/mockData';
-import { MatchScore } from '../types';
+import { MatchScore, Fixture } from '../types';
 
 interface TournamentsScreenProps {
   onOpenTeamRegistration: (tournamentTitle?: string) => void;
   onShowToast: (msg: string) => void;
   liveMatch?: MatchScore;
+  fixtures?: Fixture[];
+  onCheerMatch?: () => void;
 }
 
 export const TournamentsScreen: React.FC<TournamentsScreenProps> = ({
   onOpenTeamRegistration,
   onShowToast,
   liveMatch,
+  fixtures,
+  onCheerMatch,
 }) => {
   const match = liveMatch || LIVE_MATCH;
+  const currentFixtures = fixtures && fixtures.length > 0 ? fixtures : FIXTURES;
   const [activeSubTab, setActiveSubTab] = useState<'live' | 'upcoming' | 'history'>('live');
   const [cheers, setCheers] = useState(match.cheerCount || 142);
   const [isCheering, setIsCheering] = useState(false);
@@ -287,124 +292,102 @@ export const TournamentsScreen: React.FC<TournamentsScreenProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <span className="material-symbols-outlined text-[#855300] text-[22px]">event_upcoming</span>
-              <h2 className="text-sm font-bold text-[#131b2e] tracking-tight">আসন্ন ক্রীড়া সূচি</h2>
+              <h2 className="text-sm font-bold text-[#131b2e] tracking-tight">আসন্ন ক্রীড়া সূচি ও ফিক্সচার</h2>
             </div>
-            <span className="text-xs text-[#005b34] font-bold">সকল সূচি</span>
+            <span className="text-xs text-[#005b34] font-bold">
+              মোট: {toBengaliDigits(currentFixtures.length)}টি
+            </span>
           </div>
 
-          {/* Fixture 1: Cricket Super League */}
-          <div className="bg-white rounded-xl p-3.5 shadow-sm border border-[#bec9bf]/20 flex flex-col gap-2.5">
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1 text-[#005b34] bg-[#f2f3ff] px-2 py-0.5 rounded text-[11px] font-bold">
-                <span className="material-symbols-outlined text-[15px]">sports_cricket</span>
-                শিয়ালকোল ক্রিকেট সুপার লিগ ২০২৫
-              </span>
-              <span className="bg-[#ffddb8] text-[#855300] text-[10px] px-2 py-0.5 rounded-full font-bold">
-                ম্যাচ #০৪
-              </span>
+          {currentFixtures.length === 0 ? (
+            <div className="bg-white rounded-xl p-4 text-center text-xs text-[#3f4941] border border-[#bec9bf]/20">
+              বর্তমানে কোনো আসন্ন ফিক্সচার নেই।
             </div>
-
-            <div className="flex items-center justify-between py-1">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-[#9cf6bc] flex items-center justify-center text-xs font-bold text-[#002110] flex-shrink-0">
-                  টা
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-[#131b2e] truncate">শিয়ালকোল টাইটানস</span>
-                  <span className="text-[10px] text-[#3f4941]">অধিনায়ক: আরিফ</span>
-                </div>
-              </div>
-
-              <span className="text-xs text-[#3f4941] px-2 font-bold">বনাম</span>
-
-              <div className="flex items-center gap-2 flex-1 min-w-0 justify-end text-right">
-                <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-[#131b2e] truncate">রতনকান্দি কিংস</span>
-                  <span className="text-[10px] text-[#3f4941]">অধিনায়ক: তানভীর</span>
-                </div>
-                <div className="w-9 h-9 rounded-full bg-[#e2e7ff] flex items-center justify-center text-xs font-bold text-[#131b2e] flex-shrink-0">
-                  কি
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-[#f2f3ff] rounded-lg p-2.5 flex items-center justify-between mt-0.5">
-              <div className="flex items-center gap-1.5 text-[#3f4941]">
-                <span className="material-symbols-outlined text-[#855300] text-[18px]">calendar_month</span>
-                <span className="text-xs font-semibold text-[#131b2e]">২০ নভেম্বর ২০২৫ • দুপুর ২:০০</span>
-              </div>
-              <button
-                onClick={toggleCricketReminder}
-                className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded shadow-sm transition-all ${
-                  cricketReminder
-                    ? 'bg-[#9cf6bc] text-[#002110]'
-                    : 'bg-white text-[#005b34] hover:bg-[#005b34] hover:text-white'
-                }`}
+          ) : (
+            currentFixtures.map((fixture) => (
+              <div
+                key={fixture.id}
+                className="bg-white rounded-xl p-3.5 shadow-sm border border-[#bec9bf]/20 flex flex-col gap-2.5 relative overflow-hidden"
               >
-                <span className="material-symbols-outlined text-[15px]">
-                  {cricketReminder ? 'done' : 'notifications_active'}
-                </span>
-                <span>{cricketReminder ? 'যুক্ত আছে' : 'স্মারক রাখুন'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Fixture 2: Badminton Tournament Open Registration */}
-          <div className="bg-white rounded-xl p-3.5 shadow-sm border border-[#bec9bf]/20 flex flex-col gap-2.5 relative overflow-hidden">
-            <div className="absolute -right-8 -top-8 w-24 h-24 bg-[#fea619]/15 rounded-full pointer-events-none" />
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1 text-[#1a5939] bg-[#b0f1c7]/30 px-2 py-0.5 rounded text-[11px] font-bold">
-                <span className="material-symbols-outlined text-[15px]">sports_tennis</span>
-                বিজয় দিবস ব্যাডমিন্টন টুর্নামেন্ট
-              </span>
-              <span className="bg-[#fea619] text-[#684000] text-[10px] px-2.5 py-0.5 rounded-full font-bold animate-pulse">
-                রেজিস্ট্রেশন চলছে
-              </span>
-            </div>
-
-            <div className="flex gap-3 mt-1">
-              <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-[#eaedff]">
-                <img
-                  src={FIXTURES[1].image}
-                  alt="Badminton Match"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex flex-col justify-between flex-1 min-w-0">
-                <div>
-                  <h4 className="text-xs font-bold text-[#131b2e] leading-tight">
-                    উন্মুক্ত দ্বৈত ব্যাডমিন্টন ২০২৫
-                  </h4>
-                  <p className="text-[11px] text-[#3f4941] truncate mt-0.5">
-                    স্থান: ক্লাব ইনডোর কোর্ট, শিয়ালকোল বাজার
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 text-[#3f4941] text-[11px]">
-                  <span className="flex items-center gap-0.5">
-                    <span className="material-symbols-outlined text-[14px] text-[#005b34]">groups</span>
-                    ৩২ টিম
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1 text-[#005b34] bg-[#f2f3ff] px-2 py-0.5 rounded text-[11px] font-bold truncate max-w-[220px]">
+                    <span className="material-symbols-outlined text-[15px]">sports_soccer</span>
+                    <span className="truncate">{fixture.title}</span>
                   </span>
-                  <span className="flex items-center gap-0.5">
-                    <span className="material-symbols-outlined text-[14px] text-[#855300]">military_tech</span>
-                    প্রাইজমানি: ১৫,০০০৳
-                  </span>
+                  {fixture.matchNo ? (
+                    <span className="bg-[#ffddb8] text-[#855300] text-[10px] px-2 py-0.5 rounded-full font-bold">
+                      {fixture.matchNo}
+                    </span>
+                  ) : fixture.isRegistrationOpen ? (
+                    <span className="bg-[#fea619] text-[#684000] text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">
+                      রেজিস্ট্রেশন চলছে
+                    </span>
+                  ) : (
+                    <span className="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                      {fixture.tournamentType || 'ফিক্সচার'}
+                    </span>
+                  )}
+                </div>
+
+                {/* Team 1 vs Team 2 */}
+                <div className="flex items-center justify-between py-1">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-[#9cf6bc] flex items-center justify-center text-xs font-bold text-[#002110] flex-shrink-0">
+                      {fixture.team1?.badge || fixture.team1?.name?.slice(0, 2) || 'দ১'}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-bold text-[#131b2e] truncate">{fixture.team1?.name}</span>
+                      {fixture.team1?.captain && (
+                        <span className="text-[10px] text-[#3f4941]">অধিনায়ক: {fixture.team1.captain}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <span className="text-xs text-[#3f4941] px-2 font-bold">বনাম</span>
+
+                  <div className="flex items-center gap-2 flex-1 min-w-0 justify-end text-right">
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-bold text-[#131b2e] truncate">{fixture.team2?.name}</span>
+                      {fixture.team2?.captain && (
+                        <span className="text-[10px] text-[#3f4941]">অধিনায়ক: {fixture.team2.captain}</span>
+                      )}
+                    </div>
+                    <div className="w-9 h-9 rounded-full bg-[#e2e7ff] flex items-center justify-center text-xs font-bold text-[#131b2e] flex-shrink-0">
+                      {fixture.team2?.badge || fixture.team2?.name?.slice(0, 2) || 'দ২'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Date & Details */}
+                <div className="bg-[#f2f3ff] rounded-lg p-2.5 flex items-center justify-between mt-0.5 flex-wrap gap-2">
+                  <div className="flex items-center gap-1.5 text-[#3f4941]">
+                    <span className="material-symbols-outlined text-[#855300] text-[18px]">calendar_month</span>
+                    <span className="text-xs font-semibold text-[#131b2e]">
+                      {fixture.date} • {fixture.time} {fixture.venue ? `(${fixture.venue})` : ''}
+                    </span>
+                  </div>
+
+                  {fixture.isRegistrationOpen ? (
+                    <button
+                      onClick={() => onOpenTeamRegistration(fixture.title)}
+                      className="px-3 py-1 rounded bg-[#005b34] hover:bg-[#137547] text-white text-[11px] font-bold inline-flex items-center gap-1 shadow-sm active:scale-95 transition-all"
+                    >
+                      <span>দল নিবন্ধন</span>
+                      <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={toggleCricketReminder}
+                      className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded bg-white text-[#005b34] hover:bg-[#005b34] hover:text-white shadow-xs transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">notifications_active</span>
+                      <span>রিমাইন্ডার</span>
+                    </button>
+                  )}
                 </div>
               </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-1">
-              <span className="text-[11px] text-[#ba1a1a] font-semibold">
-                শেষ তারিখ: ১৫ ডিসেম্বর ২০২৫
-              </span>
-              <button
-                onClick={() => onOpenTeamRegistration('বিজয় দিবস ব্যাডমিন্টন ২০২৫')}
-                className="px-3.5 py-1.5 rounded-lg bg-[#005b34] hover:bg-[#137547] text-white text-xs font-bold inline-flex items-center gap-1 shadow-sm active:scale-95 transition-all"
-              >
-                <span>দল নিবন্ধন</span>
-                <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-              </button>
-            </div>
-          </div>
+            ))
+          )}
         </div>
 
         {/* 4. POINTS TABLE SNAPSHOT */}
