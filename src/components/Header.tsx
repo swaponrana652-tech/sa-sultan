@@ -34,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="fixed top-0 w-full z-50 pt-safe bg-[#faf8ff]/90 backdrop-blur-xl border-b border-black/[0.04] shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-      <div className="max-w-md mx-auto h-16 px-3 sm:px-4 flex items-center justify-between gap-1.5 sm:gap-2">
+      <div className="max-w-md h-16 px-3 sm:px-4 flex items-center justify-between gap-1.5 sm:gap-2">
         {/* Club Logo & Name */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <div className="relative flex-shrink-0">
