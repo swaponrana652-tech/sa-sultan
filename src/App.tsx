@@ -319,6 +319,8 @@ export default function App() {
               onOpenPhoto={(photo) => setSelectedPhoto(photo)}
               onShowToast={showToast}
               notices={notices}
+              onAddNotice={handleAddNotice}
+              onDeleteNotice={handleDeleteNotice}
               onOpenAdmin={() => setIsAdminOpen(true)}
               onNewApplication={handleNewApplication}
             />

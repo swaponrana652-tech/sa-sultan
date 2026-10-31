@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { CLUB_LOGO, COMMITTEE, FACILITIES, NOTICES, MAP_IMAGE, CONVENER_DATA } from '../data/mockData';
+import { CLUB_LOGO, COMMITTEE, FACILITIES, NOTICES, MAP_IMAGE, CONVENER_DATA, toBengaliDigits } from '../data/mockData';
 import { ClubNotice, Facility } from '../types';
+import { CreateNoticeModal } from './CreateNoticeModal';
 
 interface ClubContactScreenProps {
   onOpenNotice: (notice: ClubNotice) => void;
   onOpenPhoto?: (photo: { title: string; sub?: string; image: string; caption?: string; category?: string; tag?: string }) => void;
   onShowToast: (msg: string) => void;
   notices?: ClubNotice[];
+  onAddNotice?: (notice: ClubNotice) => void;
+  onDeleteNotice?: (id: string) => void;
   onOpenAdmin?: () => void;
   onNewApplication?: (app: {
     name: string;
@@ -22,9 +25,13 @@ export const ClubContactScreen: React.FC<ClubContactScreenProps> = ({
   onOpenPhoto,
   onShowToast,
   notices,
+  onAddNotice,
+  onDeleteNotice,
   onOpenAdmin,
   onNewApplication,
 }) => {
+  const [isCreateNoticeOpen, setIsCreateNoticeOpen] = useState(false);
+  const [showAllNotices, setShowAllNotices] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -116,47 +123,123 @@ export const ClubContactScreen: React.FC<ClubContactScreenProps> = ({
       {/* 2. NOTICE BOARD TICKER */}
       <section className="px-4 mt-5">
         <div className="bg-[#e2e7ff] rounded-xl p-3.5 shadow-sm border border-[#bec9bf]/20">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
             <div className="flex items-center gap-1.5">
               <span className="material-symbols-outlined text-[20px] text-[#ba1a1a] animate-pulse">campaign</span>
               <span className="text-sm font-bold text-[#131b2e]">জরুরি ক্লাব নোটিশবোর্ড</span>
             </div>
-            <span className="text-[10px] font-bold bg-[#ffdad6] text-[#ba1a1a] px-2 py-0.5 rounded-full uppercase">
-              লাইভ
+            
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setIsCreateNoticeOpen(true)}
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-[#005b34] to-[#137547] hover:from-[#137547] hover:to-[#005b34] text-white text-xs font-bold shadow-md hover:shadow-lg active:scale-95 transition-all border border-white/20"
+                title="নতুন নোটিশ পোস্ট করুন"
+              >
+                <span className="material-symbols-outlined text-[16px]">post_add</span>
+                <span>+ নোটিশ পোস্ট</span>
+              </button>
+              <span className="text-[10px] font-bold bg-[#ffdad6] text-[#ba1a1a] px-2 py-0.5 rounded-full uppercase">
+                লাইভ
+              </span>
+            </div>
+          </div>
+
+          {/* Quick Notice Post Banner */}
+          <div 
+            onClick={() => setIsCreateNoticeOpen(true)}
+            className="mb-2.5 p-2 rounded-lg bg-white/80 hover:bg-white border border-dashed border-[#005b34]/40 flex items-center justify-between gap-2 cursor-pointer group transition-all"
+          >
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-emerald-100 text-[#005b34] flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-[15px]">add</span>
+              </span>
+              <span className="text-xs font-bold text-[#005b34] group-hover:underline">
+                এখানে ক্লিক করে নতুন নোটিশ প্রকাশ করুন
+              </span>
+            </div>
+            <span className="text-[11px] text-[#3f4941] flex items-center gap-0.5">
+              <span>পোস্ট ফর্ম</span>
+              <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
             </span>
           </div>
 
           <div className="space-y-2">
-            {(notices || NOTICES).slice(0, 3).map((notice) => (
-              <div
-                key={notice.id}
-                onClick={() => onOpenNotice(notice)}
-                className="bg-white rounded-lg p-2.5 flex items-start justify-between gap-2 shadow-sm hover:shadow transition-all cursor-pointer border border-[#bec9bf]/10 active:scale-[0.99]"
-              >
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-center gap-1.5 text-[#3f4941] text-[10px]">
-                    <span className="material-symbols-outlined text-[13px] text-[#855300]">calendar_today</span>
-                    <span>{notice.date}</span>
-                    <span className="w-1 h-1 rounded-full bg-[#bec9bf]" />
-                    <span className="text-[#005b34] font-bold">{notice.category}</span>
-                  </div>
-                  <p className="text-xs font-semibold text-[#131b2e] truncate mt-0.5">
-                    {notice.title}
-                  </p>
-                </div>
-                <button
-                  aria-label="PDF ডাউনলোড"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenNotice(notice);
-                  }}
-                  className="flex-shrink-0 w-8 h-8 rounded-full bg-[#f2f3ff] hover:bg-[#005b34] hover:text-white flex items-center justify-center text-[#005b34] transition-colors"
-                  title="PDF ডাউনলোড করুন"
-                >
-                  <span className="material-symbols-outlined text-[16px]">download</span>
-                </button>
-              </div>
-            ))}
+            {(() => {
+              const allNotices = notices && notices.length > 0 ? notices : NOTICES;
+              const displayNotices = showAllNotices ? allNotices : allNotices.slice(0, 3);
+              return (
+                <>
+                  {displayNotices.map((notice) => (
+                    <div
+                      key={notice.id}
+                      onClick={() => onOpenNotice(notice)}
+                      className="bg-white rounded-lg p-2.5 flex items-start justify-between gap-2 shadow-sm hover:shadow transition-all cursor-pointer border border-[#bec9bf]/10 active:scale-[0.99]"
+                    >
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 text-[#3f4941] text-[10px]">
+                          <span className="material-symbols-outlined text-[13px] text-[#855300]">calendar_today</span>
+                          <span>{notice.date}</span>
+                          <span className="w-1 h-1 rounded-full bg-[#bec9bf]" />
+                          <span className="text-[#005b34] font-bold">{notice.category}</span>
+                        </div>
+                        <p className="text-xs font-semibold text-[#131b2e] truncate mt-0.5">
+                          {notice.title}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                        {onDeleteNotice && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onDeleteNotice(notice.id);
+                              onShowToast('নোটিশটি মুছে ফেলা হয়েছে।');
+                            }}
+                            className="w-7 h-7 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50 flex items-center justify-center transition-colors"
+                            title="নোটিশ মুছুন"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">delete</span>
+                          </button>
+                        )}
+                        <button
+                          aria-label="PDF ডাউনলোড"
+                          onClick={() => onOpenNotice(notice)}
+                          className="w-7 h-7 rounded-full bg-[#f2f3ff] hover:bg-[#005b34] hover:text-white flex items-center justify-center text-[#005b34] transition-colors"
+                          title="PDF ডাউনলোড ও বিস্তারিত দেখুন"
+                        >
+                          <span className="material-symbols-outlined text-[15px]">download</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Toggle show all notices */}
+                  {allNotices.length > 3 && (
+                    <div className="pt-1 flex items-center justify-between text-xs text-[#005b34]">
+                      <button
+                        type="button"
+                        onClick={() => setShowAllNotices(!showAllNotices)}
+                        className="font-bold hover:underline flex items-center gap-0.5"
+                      >
+                        <span>{showAllNotices ? 'সংক্ষিপ্ত নোটিশ তালিকা দেখুন' : `সকল নোটিশ দেখুন (${toBengaliDigits(allNotices.length)}টি)`}</span>
+                        <span className="material-symbols-outlined text-[16px]">
+                          {showAllNotices ? 'expand_less' : 'expand_more'}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsCreateNoticeOpen(true)}
+                        className="font-bold text-[#855300] hover:underline flex items-center gap-0.5"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">edit_note</span>
+                        <span>নোটিশ লিখুন</span>
+                      </button>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       </section>
@@ -755,6 +838,18 @@ export const ClubContactScreen: React.FC<ClubContactScreenProps> = ({
           </div>
         </div>
       )}
+
+      {/* Create / Post Notice Modal */}
+      <CreateNoticeModal
+        isOpen={isCreateNoticeOpen}
+        onClose={() => setIsCreateNoticeOpen(false)}
+        onAddNotice={(notice) => {
+          if (onAddNotice) {
+            onAddNotice(notice);
+          }
+        }}
+        onShowToast={onShowToast}
+      />
     </div>
   );
 };

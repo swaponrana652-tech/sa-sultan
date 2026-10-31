@@ -164,6 +164,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             সদস্যপদ ফর্ম
           </button>
           <button
+            onClick={() => onNavigateTab('club-contact')}
+            className="flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-red-50 text-[#ba1a1a] text-xs font-bold shadow-sm active:scale-95 transition-transform border border-red-200 hover:border-red-400"
+          >
+            <span className="material-symbols-outlined text-[18px] text-[#ba1a1a]">campaign</span>
+            জরুরি নোটিশবোর্ড
+          </button>
+          <button
             onClick={() => onOpenPhoto(GALLERY_MOMENTS[0])}
             className="flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-[#131b2e] text-xs font-bold shadow-sm active:scale-95 transition-transform border border-red-200 hover:border-red-400"
           >
